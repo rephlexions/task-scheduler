@@ -7,10 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
 
     private ArrayList<String> mNames = new ArrayList<>();
@@ -20,25 +21,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate: started.");
-        initListItems();
-        // Capture our button from layout
-        Button button = (Button)findViewById(R.id.btnAddItem);
+
+        // Initiate RecyclerView
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mNames);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        final EditText edit = (EditText) findViewById(R.id.editText);
+        final Button button = (Button) findViewById(R.id.btnAddItem);
         // Register the onClick listener with the implementation above
-        button.setOnClickListener(corkyListener);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: I've been clicked." + " " +edit.getText().toString());
+                mNames.add(edit.getText().toString());
+                adapter.notifyDataSetChanged();
+                // Code here executes on main thread after user presses button
+            }
+        });
 
     }
 
-    // Create an anonymous implementation of OnClickListener
-    private View.OnClickListener corkyListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            Log.d(TAG, "onClick: I've been clicked");
-        }
-    };
 
+    /*
     private void initListItems(){
-        /*
-        placeholder function to populate the Recycler View
-         */
         Log.d(TAG, "initListItems: preparing bitmaps.");
         mNames.add("Havasu Falls");
         mNames.add("Trondheim");
@@ -48,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         mNames.add("Frozen Lake");
         initRecyclerView();
     }
+    */
+
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView: init recyclerview.");
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
