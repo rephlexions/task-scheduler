@@ -3,11 +3,34 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:id="@+id/parent_layout">
 
-    <TextView
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Item Example"
-        android:id="@+id/list_item"
-        android:padding="10dp"
-        />
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/imageView"/>
+
+            <TextView
+                android:id="@+id/list_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="dp"
+                android:layout_toEndOf="@+id/imageView"
+                android:text="Item Heading"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <TextView
+                android:id="@+id/list_item_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/list_item"
+                android:layout_toEndOf="@+id/imageView"
+                android:text="Item Description" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 </RelativeLayout>

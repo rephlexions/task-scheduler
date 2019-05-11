@@ -29,11 +29,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return holder;
     }
 
+    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
         Log.d(TAG, "onBindViewHolder: called");
         viewHolder.listItem.setText(mItemNames.get(position));
-
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -43,11 +43,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         });
     }
 
+    // Return the size of the data set (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mItemNames.size();
     }
 
+    // Provide a reference to the views for each data item
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView listItem;
         RelativeLayout parentLayout;

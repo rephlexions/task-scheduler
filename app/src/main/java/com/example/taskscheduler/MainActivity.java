@@ -36,25 +36,11 @@ public class MainActivity extends AppCompatActivity{
                 Log.d(TAG, "onClick: I've been clicked." + " " +edit.getText().toString());
                 mNames.add(edit.getText().toString());
                 adapter.notifyDataSetChanged();
-                // Code here executes on main thread after user presses button
+
             }
         });
 
     }
-
-
-    /*
-    private void initListItems(){
-        Log.d(TAG, "initListItems: preparing bitmaps.");
-        mNames.add("Havasu Falls");
-        mNames.add("Trondheim");
-        mNames.add("Portugal");
-        mNames.add("Rocky Mountain National Park");
-        mNames.add("Mahahual");
-        mNames.add("Frozen Lake");
-        initRecyclerView();
-    }
-    */
 
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView: init recyclerview.");
@@ -63,6 +49,4 @@ public class MainActivity extends AppCompatActivity{
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
-
-
 }
