@@ -6,12 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
-        android:layout_width="412dp"
-        android:layout_height="654dp"
+        android:layout_width="425dp"
+        android:layout_height="535dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/editText"></android.support.v7.widget.RecyclerView>
+        app:layout_constraintBottom_toTopOf="@+id/editText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"></android.support.v7.widget.RecyclerView>
 
     <EditText
         android:id="@+id/editText"
