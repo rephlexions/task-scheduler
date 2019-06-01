@@ -1,5 +1,10 @@
 package com.example.taskscheduler;
 
+import android.app.Dialog;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +16,7 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends FragmentActivity implements AddTaskDialogFragment.NoticeDialogListener{
     private static final String TAG = "MainActivity";
 
     private ArrayList<String> mNames = new ArrayList<>();
@@ -28,6 +33,17 @@ public class MainActivity extends AppCompatActivity{
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    showAddDialog();
+            }
+        });
+
+
+/*
         final EditText edit = (EditText) findViewById(R.id.editText);
         final Button button = (Button) findViewById(R.id.btnAddItem);
         // Register the onClick listener with the implementation above
@@ -39,7 +55,29 @@ public class MainActivity extends AppCompatActivity{
 
             }
         });
+*/
+    }
+// TODO https://developer.android.com/guide/topics/ui/dialogs#PassingEvents
+    public void showAddDialog(){
+        DialogFragment dialog = new AddTaskDialogFragment();
+        dialog.show(getSupportFragmentManager(), "task");
+    }
 
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        // User touched the dialog's positive button
+        Dialog dialogView = dialog.getDialog();
+        EditText editText = (EditText) dialogView.findViewById(R.id.task_name);
+        Log.d(TAG, "onClick: I've been clicked." + " " + editText);
+
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
     }
 
     private void initRecyclerView(){
