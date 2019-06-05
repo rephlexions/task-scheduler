@@ -13,17 +13,12 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/button_add_task"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="25dp"
-        android:src="@drawable/ic_add_white_24dp"
-        app:fabSize="auto"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:maxImageSize="24dp"
+        android:layout_margin="35dp"
+        android:src="@drawable/ic_add"
         app:rippleColor="@color/rippleColor" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -39,8 +39,8 @@ dependencies {
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
     // Room components
     implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
-
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    // For Kotlin use kapt instead of annotationProcessor
 
 
 }

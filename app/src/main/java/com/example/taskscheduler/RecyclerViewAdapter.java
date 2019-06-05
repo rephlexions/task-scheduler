@@ -55,7 +55,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         RelativeLayout parentLayout;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            listItem = itemView.findViewById(R.id.list_item);
+            listItem = itemView.findViewById(R.id.text_view_title);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
     }

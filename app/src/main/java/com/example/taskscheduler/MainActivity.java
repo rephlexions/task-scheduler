@@ -5,7 +5,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +18,8 @@ public class MainActivity extends AppCompatActivity implements AddTaskDialogFrag
 
     private TaskViewModel taskViewModel;
     private RecyclerView recyclerView;
-    private RecyclerViewAdapter adapter;
+    private TaskAdapter adapter;
+
     private ArrayList<String> mNames = new ArrayList<>();
     private FloatingActionButton fab;
 
@@ -31,20 +31,20 @@ public class MainActivity extends AppCompatActivity implements AddTaskDialogFrag
 
         // Initiate RecyclerView
         recyclerView = findViewById(R.id.recycler_view);
-        adapter = new RecyclerViewAdapter(this, mNames);
-        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
+        recyclerView.setHasFixedSize(true);
+        adapter = new TaskAdapter();
+        recyclerView.setAdapter(adapter);
 
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
         taskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
             @Override
             public void onChanged(List<Task> tasks) {
-                //update RecyclerView
+                adapter.setTasks(tasks);
             }
         });
 
-        fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.button_add_task);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
