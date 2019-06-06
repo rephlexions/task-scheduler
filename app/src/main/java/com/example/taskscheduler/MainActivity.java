@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         taskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
             @Override
             public void onChanged(List<Task> tasks) {
-                adapter.setTasks(tasks);
+                adapter.submitList(tasks);
             }
         });
 

@@ -6,15 +6,34 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
-    private List<Task> tasks = new ArrayList<>();
+public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
     private onItemClickListener listener;
+
+    public TaskAdapter() {
+        super(DIFF_CALLBACK);
+    }
+
+    private static final DiffUtil.ItemCallback<Task> DIFF_CALLBACK = new DiffUtil.ItemCallback<Task>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Task oldItem, @NonNull Task newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Task oldItem, @NonNull Task newItem) {
+            return oldItem.getTitle().equals(newItem.getTitle()) &&
+                    oldItem.getDescription().equals(newItem.getDescription()) &&
+                    oldItem.getPriority() == newItem.getPriority();
+        }
+    };
 
     @NonNull
     @Override
@@ -27,25 +46,16 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull TaskHolder holder, int position) {
-        Task currentTask = tasks.get(position);
+        Task currentTask = getItem(position);
         holder.textViewTitle.setText(currentTask.getTitle());
         holder.textViewDescription.setText(currentTask.getDescription());
         holder.textViewPriority.setText(String.valueOf(currentTask.getPriority()));
 
     }
 
-    @Override
-    public int getItemCount() {
-        return tasks.size();
-    }
-
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
-        notifyDataSetChanged();
-    }
 
     public Task getTaskAt(int position) {
-        return tasks.get(position);
+        return getItem(position);
     }
 
     class TaskHolder extends RecyclerView.ViewHolder {
@@ -63,7 +73,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (listener != null && position != RecyclerView.NO_POSITION) {
-                        listener.onItemClick(tasks.get(position));
+                        listener.onItemClick(getItem(position));
                     }
 
                 }
