@@ -10,9 +10,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
     private onItemClickListener listener;
@@ -31,7 +28,7 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         public boolean areContentsTheSame(@NonNull Task oldItem, @NonNull Task newItem) {
             return oldItem.getTitle().equals(newItem.getTitle()) &&
                     oldItem.getDescription().equals(newItem.getDescription()) &&
-                    oldItem.getPriority() == newItem.getPriority();
+                    oldItem.getPriority().equals(newItem.getPriority());
         }
     };
 
@@ -49,7 +46,7 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         Task currentTask = getItem(position);
         holder.textViewTitle.setText(currentTask.getTitle());
         holder.textViewDescription.setText(currentTask.getDescription());
-        holder.textViewPriority.setText(String.valueOf(currentTask.getPriority()));
+        holder.textViewPriority.setText(currentTask.getPriority());
 
     }
 
@@ -66,7 +63,6 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         public TaskHolder(@NonNull View itemView) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.text_view_title);
-            textViewDescription = itemView.findViewById(R.id.text_view_description);
             textViewPriority = itemView.findViewById(R.id.text_view_priority);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

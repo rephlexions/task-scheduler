@@ -21,30 +21,44 @@
             android:layout_marginStart="1dp" />
 
         <TextView
-            android:id="@+id/text_view_priority"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:text="1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
-        <TextView
             android:id="@+id/text_view_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/checkBox"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Item Heading"
+            android:text="@string/item_heading"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-        <TextView
-            android:id="@+id/text_view_description"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/text_view_title"
-            android:layout_toEndOf="@+id/checkBox"
-            android:text="Item Description" />
+            android:layout_toEndOf="@+id/checkBox">
+
+            <ImageView
+                android:id="@+id/description_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_note_black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_alarm_on_black"
+                android:layout_marginStart="8dp"
+                android:text="@string/task_deadline"/>
+
+
+            <TextView
+                android:id="@+id/text_view_priority"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/task_priority"
+                android:layout_marginStart="8dp"/>
+
+        </LinearLayout>
+
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

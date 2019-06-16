@@ -13,14 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/dialog_title"
-        android:inputType="text"/>
+        android:inputType="text" />
 
     <EditText
         android:id="@+id/edit_text_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Task Description"
-        android:inputType="textMultiLine"/>
+        android:inputType="textMultiLine" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -34,4 +34,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <Spinner
+        android:id="@+id/spinner_priority"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </Spinner>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_alarm_black"
+            android:id="@+id/alarm_icon"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/alarm_icon"
+            android:layout_marginStart="10dp"
+            android:hint="Remind me" />
+    </RelativeLayout>
 </LinearLayout>

@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int ADD_TASK_REQUEST = 1;
     public static final int EDIT_TASK_REQUEST = 2;
 
-
     private TaskViewModel taskViewModel;
     private RecyclerView recyclerView;
     private TaskAdapter adapter;
@@ -44,14 +43,18 @@ public class MainActivity extends AppCompatActivity {
         adapter = new TaskAdapter();
         recyclerView.setAdapter(adapter);
 
+        // Get ViewModel instance inside the activity
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
+        //Observe  and get changes in the ViewModel LiveData
         taskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
             @Override
             public void onChanged(List<Task> tasks) {
+                // Update RecyclerView
                 adapter.submitList(tasks);
             }
         });
 
+        // Delete on swipe
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT) {
             @Override
@@ -85,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, AddEditTaskActivity.class);
+                // Get our input back from AddEditTaskActivity
                 startActivityForResult(intent, ADD_TASK_REQUEST);
             }
         });
@@ -97,23 +101,23 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == ADD_TASK_REQUEST && resultCode == RESULT_OK) {
             String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
-            int priority = data.getIntExtra(AddEditTaskActivity.EXTRA_PRIORITY, 1);
+            String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
 
             Task task = new Task(title, description, priority);
             taskViewModel.insert(task);
-
             Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
+
         } else if (requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK) {
             int id = data.getIntExtra(AddEditTaskActivity.EXTRA_ID, -1);
 
-            if (id == -1){
+            if (id == -1) {
                 Toast.makeText(this, "Task can't be updated", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
-            int priority = data.getIntExtra(AddEditTaskActivity.EXTRA_PRIORITY, 1);
+            String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
 
             Task task = new Task(title, description, priority);
             task.setId(id);

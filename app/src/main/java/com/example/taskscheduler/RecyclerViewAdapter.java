@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 
+// TODO Delete this
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
     private static final String TAG = "RecyclerViewAdapter";
     private ArrayList<String> mItemNames = new ArrayList<>();

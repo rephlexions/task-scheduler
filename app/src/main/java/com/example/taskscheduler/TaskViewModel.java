@@ -18,23 +18,23 @@ public class TaskViewModel extends AndroidViewModel {
         allTasks = repository.getAllTasks();
     }
 
-    public void insert(Task task){
+    public void insert(Task task) {
         repository.insert(task);
     }
 
-    public void update(Task task){
+    public void update(Task task) {
         repository.update(task);
     }
 
-    public void delete(Task task){
+    public void delete(Task task) {
         repository.delete(task);
     }
 
-    public void deleteAllTasks(){
+    public void deleteAllTasks() {
         repository.deleteAllTasks();
     }
 
-    public LiveData<List<Task>> getAllTasks(){
+    public LiveData<List<Task>> getAllTasks() {
         return allTasks;
     }
 

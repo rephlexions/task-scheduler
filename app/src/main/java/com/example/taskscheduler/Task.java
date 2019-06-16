@@ -5,15 +5,15 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "task_table")
 public class Task {
+    //Class that represents one task object and the database table
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-
     private String title;
     private String description;
-    private int priority;
+    private String priority;
 
-    public Task(String title, String description, int priority) {
+    public Task(String title, String description, String priority) {
         this.title = title;
         this.description = description;
         this.priority = priority;
@@ -35,7 +35,7 @@ public class Task {
         return description;
     }
 
-    public int getPriority() {
+    public String getPriority() {
         return priority;
     }
 }

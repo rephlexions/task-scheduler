@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+// TODO Delete this fragment(?)
 public class AddTaskDialogFragment extends DialogFragment {
     private EditText editTaskTitle;
     private EditText editTaskDetail;

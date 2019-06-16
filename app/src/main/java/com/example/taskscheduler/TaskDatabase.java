@@ -9,13 +9,15 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = Task.class, version = 1)
+@Database(entities = {Task.class}, version = 1)
 public abstract class TaskDatabase extends RoomDatabase {
 
+    // Create a database instance that acts as a unique singleton  throughout the app
     private static TaskDatabase instance;
 
     public abstract TaskDao taskDao();
 
+    // get Database instance. Synchronized (one thread at a time)
     public static synchronized TaskDatabase getInstance(Context context){
         if(instance == null){
             instance = Room.databaseBuilder(context.getApplicationContext(), TaskDatabase.class,
@@ -37,14 +39,15 @@ public abstract class TaskDatabase extends RoomDatabase {
 
     private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void>{
         private TaskDao taskDao;
+
         private PopulateDbAsyncTask (TaskDatabase db){
             taskDao = db.taskDao();
         }
+
         @Override
         protected Void doInBackground(Void...voids){
-            taskDao.insert(new Task("Buy some milk", "2 liters", 1));
-            taskDao.insert(new Task("Call Davide", "party planning", 2));
-            taskDao.insert(new Task("Feed the cat", "also pet the cat", 1));
+            taskDao.insert(new Task("Buy some milk", "2 liters", "Low"));
+            taskDao.insert(new Task("Feed the cat", "also pet the cat", "Low"));
             return null;
         }
     }
