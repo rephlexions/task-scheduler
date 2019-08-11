@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#3F51B5</color>
-    <color name="colorAccent">#E91E63</color>
-    <color name="rippleColor">#EC80A5</color>
+    <!-- https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=2196F3&secondary.color=F44336 -->
+    <color name="colorPrimary">#03a9f4</color>
+    <color name="colorPrimaryLight">#67daff</color>
+    <color name="colorPrimaryDark">#007ac1</color>
+    <color name="colorSecondary">#f44336</color>
+    <color name="colorSecondaryLight">#ff7961</color>
+    <color name="colorSecondaryDark">#ba000d</color>
+
+    <color name="black_12">#1f000000</color>
+    <color name="divider">@color/black_12</color>
+
+
 </resources>

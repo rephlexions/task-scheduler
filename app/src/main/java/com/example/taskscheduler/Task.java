@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "task_table")
 public class Task {
     //Class that represents one task object and the database table
-
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String title;

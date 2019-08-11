@@ -19,6 +19,6 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="35dp"
         android:src="@drawable/ic_add"
-        app:rippleColor="@color/rippleColor" />
+        app:rippleColor="@color/colorSecondaryLight" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

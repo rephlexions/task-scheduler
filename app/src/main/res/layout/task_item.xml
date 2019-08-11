@@ -27,10 +27,12 @@
             android:layout_toEndOf="@+id/checkBox"
             android:ellipsize="end"
             android:maxLines="1"
+            android:layout_marginStart="10dp"
             android:text="@string/item_heading"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
         <LinearLayout
+            android:layout_marginStart="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/text_view_title"
@@ -53,7 +55,7 @@
             <TextView
                 android:id="@+id/text_view_priority"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/task_priority"
                 android:layout_marginStart="8dp"/>
 

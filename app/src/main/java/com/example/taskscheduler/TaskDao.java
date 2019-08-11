@@ -11,7 +11,8 @@ import java.util.List;
 
 @Dao
 public interface TaskDao {
-    //DAO defines our database operations. ROOM will generate the necessary code.
+    //DAO defines our database operations. Dont provide the method body.
+    // Just annotate and ROOM will generate the necessary code.
 
     @Insert
     void insert(Task task);
@@ -26,6 +27,6 @@ public interface TaskDao {
     @Query("DELETE FROM TASK_TABLE")
     void deleteAllTasks();
 
-    @Query("SELECT * FROM TASK_TABLE ORDER BY ID ASC")
+    @Query("SELECT * FROM TASK_TABLE ORDER BY ID ASC")  // ORDER BY priority DESC
     LiveData<List<Task>> getAllTasks();
 }

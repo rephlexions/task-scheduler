@@ -35,6 +35,7 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
     @NonNull
     @Override
     public TaskHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // parent is the recycler view itself and since the RV is in the MainActivity we can get the context
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.task_item, parent, false);
 
@@ -45,11 +46,8 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
     public void onBindViewHolder(@NonNull TaskHolder holder, int position) {
         Task currentTask = getItem(position);
         holder.textViewTitle.setText(currentTask.getTitle());
-        holder.textViewDescription.setText(currentTask.getDescription());
         holder.textViewPriority.setText(currentTask.getPriority());
-
     }
-
 
     public Task getTaskAt(int position) {
         return getItem(position);
@@ -57,13 +55,14 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
 
     class TaskHolder extends RecyclerView.ViewHolder {
         private TextView textViewTitle;
-        private TextView textViewDescription;
         private TextView textViewPriority;
 
         public TaskHolder(@NonNull View itemView) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.text_view_title);
             textViewPriority = itemView.findViewById(R.id.text_view_priority);
+
+            //Set listener on card view items
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -71,7 +70,6 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
                     if (listener != null && position != RecyclerView.NO_POSITION) {
                         listener.onItemClick(getItem(position));
                     }
-
                 }
             });
         }

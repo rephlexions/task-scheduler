@@ -10,6 +10,7 @@ public class TaskRepository {
     private LiveData<List<Task>> allTasks;
 
     public TaskRepository(Application application) {
+        //Since application is a subclass of context we can use it as a context to create the database instance
         TaskDatabase database = TaskDatabase.getInstance(application);
         taskDao = database.taskDao();
         allTasks = taskDao.getAllTasks();
@@ -18,6 +19,8 @@ public class TaskRepository {
     public void insert(Task task) {
         new InsertTaskAsyncTask(taskDao).execute(task);
     }
+
+    // The API that the repository exposes to the ViewModel
 
     public void update(Task task) {
         new UpdateTaskAsyncTask(taskDao).execute(task);

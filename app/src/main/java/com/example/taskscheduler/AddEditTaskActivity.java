@@ -14,6 +14,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 public class AddEditTaskActivity extends AppCompatActivity {
+
+    // Intent extra keys. Uses package name to keep them unique
     public static final String EXTRA_ID =
             "com.example.taskscheduler.EXTRA_ID";
     public static final String EXTRA_TITLE =
@@ -35,10 +37,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
         editTextTitle = findViewById(R.id.edit_text_title);
         editTextDescription = findViewById(R.id.edit_text_description);
-        numberPickerPriority = findViewById(R.id.number_picker_priority);
-        spinner = (Spinner) findViewById(R.id.spinner_priority);
-        numberPickerPriority.setMinValue(1);
-        numberPickerPriority.setMaxValue(4);
+        //spinner = (Spinner) findViewById(R.id.spinner_priority);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -46,8 +45,8 @@ public class AddEditTaskActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
+
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_ID)) {
             setTitle("Edit Task");
@@ -68,7 +67,9 @@ public class AddEditTaskActivity extends AppCompatActivity {
             Toast.makeText(this, "Please insert a Title and a Description", Toast.LENGTH_SHORT).show();
             return;
         }
-        // Return data to the onActivityResult method in MainActivity
+
+        /* Accept input and save task. Return data to the onActivityResult method in MainActivity
+        Insert data in database and close activity */
         Intent data = new Intent();
         data.putExtra(EXTRA_TITLE, title);
         data.putExtra(EXTRA_DESCRIPTION, description);
@@ -80,6 +81,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
         }
 
         setResult(RESULT_OK, data);
+        // Close activity
         finish();
     }
 

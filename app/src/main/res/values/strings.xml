@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">Task Scheduler</string>
-    <string name="dialog_title">Task Title</string>
+    <string name="task_title">Task Title</string>
     <string name="add_task">Add</string>
     <string name="cancel">Cancel</string>
     <string name="item_heading">Item Heading</string>
     <string name="task_deadline">No Deadline</string>
     <string name="task_priority">No Priority</string>
+    <string name="task_description">Task Description</string>
 
 </resources>

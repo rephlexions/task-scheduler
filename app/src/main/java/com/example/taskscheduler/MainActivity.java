@@ -1,28 +1,24 @@
 package com.example.taskscheduler;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    // Constants to distinguish between different requests
     public static final int ADD_TASK_REQUEST = 1;
     public static final int EDIT_TASK_REQUEST = 2;
 
@@ -45,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Get ViewModel instance inside the activity
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
-        //Observe  and get changes in the ViewModel LiveData
+        //Observe the live data and get changes in the ViewModel
         taskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
             @Override
             public void onChanged(List<Task> tasks) {
@@ -66,11 +62,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                // TODO: apply different actions depending on the direction
+                // on swipe get task position and delete
                 taskViewModel.delete(adapter.getTaskAt(viewHolder.getAdapterPosition()));
                 Toast.makeText(MainActivity.this, "Task deleted", Toast.LENGTH_SHORT).show();
             }
         }).attachToRecyclerView(recyclerView);
 
+        // Implements onItemClickListener interface. Get task details and startActivityForResult
         adapter.setOnItemClickListener(new TaskAdapter.onItemClickListener() {
             @Override
             public void onItemClick(Task task) {
@@ -103,13 +102,14 @@ public class MainActivity extends AppCompatActivity {
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
 
+            //Create and insert task into the database
             Task task = new Task(title, description, priority);
             taskViewModel.insert(task);
             Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
 
         } else if (requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK) {
             int id = data.getIntExtra(AddEditTaskActivity.EXTRA_ID, -1);
-
+            //Don't update id ID is not valid
             if (id == -1) {
                 Toast.makeText(this, "Task can't be updated", Toast.LENGTH_SHORT).show();
                 return;
@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
 
+            //ROOM needs (a valid) ID to identify task to be updated
             Task task = new Task(title, description, priority);
             task.setId(id);
             taskViewModel.update(task);
