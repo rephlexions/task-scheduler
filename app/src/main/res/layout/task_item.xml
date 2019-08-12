@@ -42,17 +42,22 @@
                 android:id="@+id/description_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_note_black"/>
+                android:src="@drawable/ic_description_black"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_alarm_on_black"
                 android:layout_marginStart="8dp"
-                android:text="@string/task_deadline"/>
-
+                android:text="@string/task_date" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/task_time"/>
 
             <TextView
+                android:drawableStart="@drawable/ic_priority_high_black"
                 android:id="@+id/text_view_priority"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

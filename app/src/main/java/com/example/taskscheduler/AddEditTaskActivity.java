@@ -7,10 +7,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.NumberPicker;
-import android.widget.Spinner;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 public class AddEditTaskActivity extends AppCompatActivity {
@@ -27,8 +27,10 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
     private EditText editTextTitle;
     private EditText editTextDescription;
-    private NumberPicker numberPickerPriority;
-    private Spinner spinner;
+    RadioGroup radioGroup;
+    RadioButton radioButton;
+    String radioChoice;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +39,28 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
         editTextTitle = findViewById(R.id.edit_text_title);
         editTextDescription = findViewById(R.id.edit_text_description);
-        //spinner = (Spinner) findViewById(R.id.spinner_priority);
 
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.priority_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        radioGroup = (RadioGroup) findViewById(R.id.radio_group);
+        final RadioButton nonePriority = (RadioButton) findViewById(R.id.radio_priority_none);
+        final RadioButton lowPriority = (RadioButton) findViewById(R.id.radio_priority_low);
+        RadioButton mediumPriority = (RadioButton) findViewById(R.id.radio_priority_medium);
+        RadioButton highPriority = (RadioButton) findViewById(R.id.radio_priority_high);
+
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(nonePriority.isChecked()){
+                    Toast.makeText(AddEditTaskActivity.this, "None", Toast.LENGTH_SHORT).show();
+                    radioChoice = "None";
+                }
+                else if (lowPriority.isChecked()){
+                    Toast.makeText(AddEditTaskActivity.this, "Low", Toast.LENGTH_SHORT).show();
+                    radioChoice = "Low";
+                }
+            }
+        });
+
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
 
@@ -52,18 +69,26 @@ public class AddEditTaskActivity extends AppCompatActivity {
             setTitle("Edit Task");
             editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
-            numberPickerPriority.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
+            //numberPickerPriority.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
         } else {
             setTitle("Add Task");
         }
     }
 
+    public void checkButton(View v) {
+        int radioId = radioGroup.getCheckedRadioButtonId();
+        radioButton = findViewById(radioId);
+
+        Toast.makeText(this, "Selected Radio Button: " + radioId,
+                Toast.LENGTH_SHORT).show();
+
+    }
+
     private void saveTask() {
         String title = editTextTitle.getText().toString();
         String description = editTextDescription.getText().toString();
-        int priority = numberPickerPriority.getValue();
 
-        if (title.trim().isEmpty() || description.trim().isEmpty()) {
+        if (title.trim().isEmpty()) {
             Toast.makeText(this, "Please insert a Title and a Description", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -73,7 +98,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
         Intent data = new Intent();
         data.putExtra(EXTRA_TITLE, title);
         data.putExtra(EXTRA_DESCRIPTION, description);
-        data.putExtra(EXTRA_PRIORITY, priority);
+        data.putExtra(EXTRA_PRIORITY, radioChoice);
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {
