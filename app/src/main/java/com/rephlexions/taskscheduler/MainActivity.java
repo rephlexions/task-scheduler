@@ -1,4 +1,4 @@
-package com.example.taskscheduler;
+package com.rephlexions.taskscheduler;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.annotation.NonNull;

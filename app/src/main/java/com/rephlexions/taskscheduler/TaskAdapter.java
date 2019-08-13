@@ -1,8 +1,11 @@
-package com.example.taskscheduler;
+package com.rephlexions.taskscheduler;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -47,6 +50,15 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         Task currentTask = getItem(position);
         holder.textViewTitle.setText(currentTask.getTitle());
         holder.textViewPriority.setText(currentTask.getPriority());
+        if(currentTask.getPriority().equals("Low")){
+            holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
+        }
+        else if(currentTask.getPriority().equals("Medium")){
+            holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#FFC107")));
+        }
+        else if(currentTask.getPriority().equals("High")){
+            holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#E91E63")));
+        }
     }
 
     public Task getTaskAt(int position) {
@@ -56,11 +68,13 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
     class TaskHolder extends RecyclerView.ViewHolder {
         private TextView textViewTitle;
         private TextView textViewPriority;
+        private CheckBox checkBox;
 
         public TaskHolder(@NonNull View itemView) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.text_view_title);
             textViewPriority = itemView.findViewById(R.id.text_view_priority);
+            checkBox = itemView.findViewById(R.id.checkBox);
 
             //Set listener on card view items
             itemView.setOnClickListener(new View.OnClickListener() {

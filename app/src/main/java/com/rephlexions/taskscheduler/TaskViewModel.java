@@ -1,4 +1,4 @@
-package com.example.taskscheduler;
+package com.rephlexions.taskscheduler;
 
 import android.app.Application;
 

@@ -1,4 +1,4 @@
-package com.example.taskscheduler;
+package com.rephlexions.taskscheduler.db;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -10,23 +10,23 @@ import androidx.room.Update;
 import java.util.List;
 
 @Dao
-public interface TaskDao {
-    //DAO defines our database operations. Dont provide the method body.
-    // Just annotate and ROOM will generate the necessary code.
+public interface CategoryDao {
 
     @Insert
-    void insert(Task task);
+    void insert(Category category);
 
     @Update
-    void update(Task task);
+    void update(Category category);
 
     @Delete
-    void delete(Task task);
+    void delete(Category category);
 
+    /*
     //Define custom database operation
-    @Query("DELETE FROM TASK_TABLE")
+    @Query("DELETE FROM CATEGORY_TABLE")
     void deleteAllTasks();
 
     @Query("SELECT * FROM TASK_TABLE ORDER BY ID ASC")  // ORDER BY priority DESC
-    LiveData<List<Task>> getAllTasks();
+    LiveData<List<Category>> getAllTasks();
+    */
 }

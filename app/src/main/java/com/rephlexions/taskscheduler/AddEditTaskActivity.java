@@ -1,4 +1,4 @@
-package com.example.taskscheduler;
+package com.rephlexions.taskscheduler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -30,6 +31,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
     RadioGroup radioGroup;
     RadioButton radioButton;
     String radioChoice;
+    CheckBox checkBox;
 
 
     @Override
@@ -43,7 +45,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
         final RadioButton nonePriority = (RadioButton) findViewById(R.id.radio_priority_none);
         final RadioButton lowPriority = (RadioButton) findViewById(R.id.radio_priority_low);
-        RadioButton mediumPriority = (RadioButton) findViewById(R.id.radio_priority_medium);
+        final RadioButton mediumPriority = (RadioButton) findViewById(R.id.radio_priority_medium);
         RadioButton highPriority = (RadioButton) findViewById(R.id.radio_priority_high);
 
 
@@ -51,16 +53,21 @@ public class AddEditTaskActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(nonePriority.isChecked()){
-                    Toast.makeText(AddEditTaskActivity.this, "None", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(AddEditTaskActivity.this, "None", Toast.LENGTH_SHORT).show();
                     radioChoice = "None";
                 }
                 else if (lowPriority.isChecked()){
-                    Toast.makeText(AddEditTaskActivity.this, "Low", Toast.LENGTH_SHORT).show();
                     radioChoice = "Low";
                 }
+                else if (mediumPriority.isChecked()){
+                    radioChoice = "Medium";
+                }
+                else{
+                    radioChoice = "High";
+                }
+
             }
         });
-
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
 
@@ -69,6 +76,18 @@ public class AddEditTaskActivity extends AppCompatActivity {
             setTitle("Edit Task");
             editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
+            if(intent.getStringExtra(EXTRA_PRIORITY).equals("None")){
+                nonePriority.setChecked(true);
+            }
+            else if(intent.getStringExtra(EXTRA_PRIORITY).equals("Low")){
+                lowPriority.setChecked(true);
+            }
+            else if(intent.getStringExtra(EXTRA_PRIORITY).equals("Medium")){
+                mediumPriority.setChecked(true);
+            }
+            else{
+                highPriority.setChecked(true);
+            }
             //numberPickerPriority.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
         } else {
             setTitle("Add Task");
