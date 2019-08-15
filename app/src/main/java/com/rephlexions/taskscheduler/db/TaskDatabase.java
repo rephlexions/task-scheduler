@@ -1,4 +1,4 @@
-package com.rephlexions.taskscheduler;
+package com.rephlexions.taskscheduler.db;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -8,9 +8,6 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-
-import com.rephlexions.taskscheduler.db.Category;
-import com.rephlexions.taskscheduler.db.CategoryDao;
 
 @Database(entities = {Task.class, Category.class}, version = 1, exportSchema = false)
 public abstract class TaskDatabase extends RoomDatabase {

@@ -1,4 +1,4 @@
-package com.rephlexions.taskscheduler;
+package com.rephlexions.taskscheduler.db;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

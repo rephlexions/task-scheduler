@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.rephlexions.taskscheduler.db.Task;
+
 import java.util.List;
 
 public class TaskViewModel extends AndroidViewModel {

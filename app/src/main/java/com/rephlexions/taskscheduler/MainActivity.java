@@ -1,6 +1,8 @@
 package com.rephlexions.taskscheduler;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.rephlexions.taskscheduler.db.Task;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
