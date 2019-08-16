@@ -21,12 +21,6 @@ public interface CategoryDao {
     @Delete
     void delete(Category category);
 
-    /*
-    //Define custom database operation
-    @Query("DELETE FROM CATEGORY_TABLE")
-    void deleteAllTasks();
-
-    @Query("SELECT * FROM TASK_TABLE ORDER BY ID ASC")  // ORDER BY priority DESC
-    LiveData<List<Category>> getAllTasks();
-    */
+    @Query("SELECT * FROM CATEGORIES_TABLE ORDER BY ID ASC")
+    LiveData<List<Category>> getAllCategories();
 }

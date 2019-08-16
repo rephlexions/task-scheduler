@@ -1,31 +1,33 @@
-package com.rephlexions.taskscheduler;
+package com.rephlexions.taskscheduler.db;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import androidx.lifecycle.LiveData;
 
-import com.rephlexions.taskscheduler.db.Task;
-import com.rephlexions.taskscheduler.db.TaskDao;
-import com.rephlexions.taskscheduler.db.TaskDatabase;
+import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
 public class TaskRepository {
     private TaskDao taskDao;
+    private CategoryDao categoryDao;
+    private TaskCategoryJoinDao taskCategoryJoinDao;
     private LiveData<List<Task>> allTasks;
+    private LiveData<List<Category>> allCategories;
 
     public TaskRepository(Application application) {
         //Since application is a subclass of context we can use it as a context to create the database instance
         TaskDatabase database = TaskDatabase.getInstance(application);
         taskDao = database.taskDao();
+        categoryDao = database.categoryDao();
+        taskCategoryJoinDao = database.taskCategoryJoinDao();
         allTasks = taskDao.getAllTasks();
-    }
-
-    public void insert(Task task) {
-        new InsertTaskAsyncTask(taskDao).execute(task);
+        allCategories = categoryDao.getAllCategories();
     }
 
     // The API that the repository exposes to the ViewModel
+    public void insert(Task task) {
+        new InsertTaskAsyncTask(taskDao).execute(task);
+    }
 
     public void update(Task task) {
         new UpdateTaskAsyncTask(taskDao).execute(task);
@@ -100,4 +102,65 @@ public class TaskRepository {
             return null;
         }
     }
+
+
+    public void insertCategory(Category category) {
+        new InsertCategoryAsyncTask(categoryDao).execute(category);
+    }
+
+    public void updateCategory(Category category) {
+        new UpdateCategoryAsyncTask(categoryDao).execute(category);
+    }
+
+    public void deleteCategory(Category category) {
+        new DeleteCategoryAsyncTask(categoryDao).execute(category);
+    }
+
+    private static class InsertCategoryAsyncTask extends AsyncTask<Category, Void, Void> {
+        private CategoryDao categoryDao;
+
+        private InsertCategoryAsyncTask(CategoryDao categoryDao) {
+            this.categoryDao = categoryDao;
+        }
+
+        @Override
+        protected Void doInBackground(Category... categories) {
+            categoryDao.insert(categories[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateCategoryAsyncTask extends AsyncTask<Category, Void, Void> {
+        private CategoryDao categoryDao;
+
+        private UpdateCategoryAsyncTask(CategoryDao categoryDao) {
+            this.categoryDao = categoryDao;
+        }
+
+        @Override
+        protected Void doInBackground(Category... categories) {
+            categoryDao.update(categories[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteCategoryAsyncTask extends AsyncTask<Category, Void, Void> {
+        private CategoryDao categoryDao;
+
+        private DeleteCategoryAsyncTask(CategoryDao categoryDao) {
+            this.categoryDao = categoryDao;
+        }
+
+        @Override
+        protected Void doInBackground(Category... categories) {
+            categoryDao.delete(categories[0]);
+            return null;
+        }
+    }
+
+    public LiveData<List<Category>> getAllCategories() {
+        return allCategories;
+    }
+
+
 }

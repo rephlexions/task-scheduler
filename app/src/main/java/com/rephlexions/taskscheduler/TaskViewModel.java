@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.rephlexions.taskscheduler.db.Task;
+import com.rephlexions.taskscheduler.db.TaskRepository;
 
 import java.util.List;
 
