@@ -8,6 +8,13 @@
         <item name="colorAccent">@color/colorSecondary</item>
     </style>
 
+    <!-- for the menu drawer-->
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
 
     <style name="divider">
         <item name="android:background">@color/divider</item>
@@ -17,5 +24,4 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
     </style>
-
 </resources>
