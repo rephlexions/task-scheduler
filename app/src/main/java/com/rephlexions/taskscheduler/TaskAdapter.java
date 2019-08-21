@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -77,11 +78,13 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
             textViewTitle = itemView.findViewById(R.id.text_view_title);
             textViewPriority = itemView.findViewById(R.id.text_view_priority);
             checkBox = itemView.findViewById(R.id.checkBox);
+            boolean checked = checkBox.isChecked();
 
             //Set listener on card view items
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //TODO: https://android.jlelse.eu/android-handling-checkbox-state-in-recycler-views-71b03f237022
                     int position = getAdapterPosition();
                     if (listener != null && position != RecyclerView.NO_POSITION) {
                         listener.onItemClick(getItem(position));

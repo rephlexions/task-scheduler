@@ -4,7 +4,7 @@
     <string name="task_description">Description</string>
 
     <string name="task_date"><u>No date</u></string>
-    <string name="task_time">No time</string>
+    <string name="task_time"><u>No time</u></string>
     <string name="task_priority">No Priority</string>
 
     <string name="add_task">Add</string>

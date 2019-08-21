@@ -1,20 +1,36 @@
 package com.rephlexions.taskscheduler;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.fragment.app.DialogFragment;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-public class AddEditTaskActivity extends AppCompatActivity {
+import com.rephlexions.taskscheduler.fragments.DatePickerFragment;
+import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
+
+import java.text.DateFormat;
+import java.util.Calendar;
+
+public class AddEditTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
+            TimePickerDialog.OnTimeSetListener{
 
     // Intent extra keys. Uses package name to keep them unique
     public static final String EXTRA_ID =
@@ -32,6 +48,8 @@ public class AddEditTaskActivity extends AppCompatActivity {
     RadioButton radioButton;
     String radioChoice;
     CheckBox checkBox;
+    ImageButton deleteButton;
+
 
 
     @Override
@@ -41,6 +59,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
         editTextTitle = findViewById(R.id.edit_text_title);
         editTextDescription = findViewById(R.id.edit_text_description);
+        deleteButton = (ImageButton) findViewById(R.id.delete_datetime_button);
 
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
         final RadioButton nonePriority = (RadioButton) findViewById(R.id.radio_priority_none);
@@ -65,6 +84,18 @@ public class AddEditTaskActivity extends AppCompatActivity {
                 else{
                     radioChoice = "High";
                 }
+            }
+        });
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView dateView = (TextView) findViewById(R.id.text_view_date);
+                TextView timeView = (TextView) findViewById(R.id.text_view_time);
+                dateView.setText("No date");
+                timeView.setText("No time");
+                dateView.setPaintFlags(dateView.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                timeView.setPaintFlags(timeView.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
 
             }
         });
@@ -92,15 +123,29 @@ public class AddEditTaskActivity extends AppCompatActivity {
         } else {
             setTitle("Add Task");
         }
+
+        TextView dateTextView = (TextView) findViewById(R.id.text_view_date);
+        dateTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment datePicker = new DatePickerFragment();
+                datePicker.show(getSupportFragmentManager(), "date picker");
+            }
+        });
+
+        TextView timeTextView = (TextView) findViewById(R.id.text_view_time);
+        timeTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment timePicker = new TimePickerFragment();
+                timePicker.show(getSupportFragmentManager(), "time picker");
+            }
+        });
     }
 
     public void checkButton(View v) {
         int radioId = radioGroup.getCheckedRadioButtonId();
         radioButton = findViewById(radioId);
-
-        Toast.makeText(this, "Selected Radio Button: " + radioId,
-                Toast.LENGTH_SHORT).show();
-
     }
 
     private void saveTask() {
@@ -145,5 +190,27 @@ public class AddEditTaskActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String currentDateString = DateFormat.getDateInstance(DateFormat.FULL).format(c.getTime());
+        //TODO: save date string into db
+        TextView textView = (TextView) findViewById(R.id.text_view_date);
+        if (!currentDateString.isEmpty()){
+            textView.setText(currentDateString);
+            deleteButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        TextView textView = (TextView) findViewById(R.id.text_view_time);
+        textView.setText(hourOfDay + ":" + minute);
+        deleteButton.setVisibility(View.VISIBLE);
     }
 }

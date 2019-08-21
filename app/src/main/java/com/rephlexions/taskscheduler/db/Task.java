@@ -11,6 +11,8 @@ public class Task {
     private String title;
     private String description;
     private String priority;
+    //private boolean isDone;
+    //private String taskDate;
 
     public Task(String title, String description, String priority) {
         this.title = title;
@@ -37,5 +39,6 @@ public class Task {
     public String getPriority() {
         return priority;
     }
+
 
 }
