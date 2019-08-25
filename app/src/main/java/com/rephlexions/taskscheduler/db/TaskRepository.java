@@ -12,6 +12,7 @@ public class TaskRepository {
     private CategoryDao categoryDao;
     private TaskCategoryJoinDao taskCategoryJoinDao;
     private LiveData<List<Task>> allTasks;
+    private LiveData<List<Task>> allDueDates;
     private LiveData<List<Category>> allCategories;
 
     public TaskRepository(Application application) {
@@ -21,6 +22,7 @@ public class TaskRepository {
         categoryDao = database.categoryDao();
         taskCategoryJoinDao = database.taskCategoryJoinDao();
         allTasks = taskDao.getAllTasks();
+        allDueDates = taskDao.getAllDueDates();
         allCategories = categoryDao.getAllCategories();
     }
 
@@ -43,6 +45,10 @@ public class TaskRepository {
 
     public LiveData<List<Task>> getAllTasks() {
         return allTasks;
+    }
+
+    public LiveData<List<Task>> getAllDueDates() {
+        return allDueDates;
     }
 
 
@@ -102,6 +108,13 @@ public class TaskRepository {
             return null;
         }
     }
+
+
+
+
+
+
+
 
 
     public void insertCategory(Category category) {

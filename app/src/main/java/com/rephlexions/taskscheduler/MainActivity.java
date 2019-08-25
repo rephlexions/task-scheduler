@@ -3,11 +3,21 @@ package com.rephlexions.taskscheduler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.rephlexions.taskscheduler.db.Task;
+import com.rephlexions.taskscheduler.reminders.AlertReceiver;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+
+
+import android.app.AlarmManager;
+import android.app.IntentService;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -16,16 +26,23 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TimePicker;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     // Constants to distinguish between different requests
     public static final int ADD_TASK_REQUEST = 1;
     public static final int EDIT_TASK_REQUEST = 2;
@@ -36,6 +53,12 @@ public class MainActivity extends AppCompatActivity{
     private FloatingActionButton buttonAddTask;
     private DrawerLayout drawer;
     private Button navButton;
+
+
+    String date, time;
+    String year, month, day;
+    int hour, minute;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,9 +145,44 @@ public class MainActivity extends AppCompatActivity{
             String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
+            String status = "pending";
+            date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
+            time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
+
+            if(date.isEmpty() && time.isEmpty()){
+
+            }
+            SimpleDateFormat sdfYear = new SimpleDateFormat("yy");
+            SimpleDateFormat sdfMonth = new SimpleDateFormat("MM");
+            SimpleDateFormat sdfDay = new SimpleDateFormat("dd");
+            String[] split = time.split(":");
+
+            year = sdfYear.format(Date.parse(date));
+            month = sdfMonth.format(Date.parse(date));
+            day = sdfDay.format(Date.parse(date));
+            hour = Integer.valueOf(split[0]);
+            minute = Integer.valueOf(split[1]);
+
+            Calendar cal = Calendar.getInstance();
+
+            cal.set(Calendar.YEAR, Integer.parseInt(year));
+            cal.set(Calendar.MONTH, Integer.parseInt(month));
+            cal.set(Calendar.DATE, Integer.parseInt(day));
+            cal.set(Calendar.HOUR_OF_DAY, hour);
+            cal.set(Calendar.MINUTE, minute);
+            cal.set(Calendar.SECOND, 0);
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(this, AlertReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+            if (cal.before(Calendar.getInstance())) {
+                cal.add(Calendar.DATE, 1);
+            }
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
+
 
             //Create and insert task into the database
-            Task task = new Task(title, description, priority);
+            Task task = new Task(title, description, priority, status, cal.getTimeInMillis());
             taskViewModel.insert(task);
             Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
 
@@ -139,9 +197,10 @@ public class MainActivity extends AppCompatActivity{
             String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
-
+            // TODO: implement taskViewModel.getStatus()
+            String status = "pending";
             //ROOM needs (a valid) ID to identify task to be updated
-            Task task = new Task(title, description, priority);
+            Task task = new Task(title, description, priority, status,);
             task.setId(id);
             taskViewModel.update(task);
 
@@ -179,4 +238,27 @@ public class MainActivity extends AppCompatActivity{
             super.onBackPressed();
         }
     }
+
+    /*
+    @Override
+    public void onTimeSet(TimePicker view, int hour, int minute){
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, Integer.parseInt(year));
+        cal.set(Calendar.MONTH, Integer.parseInt(month));
+        cal.set(Calendar.DATE, Integer.parseInt(day));
+        cal.set(Calendar.HOUR, hour);
+        cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.SECOND, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlertReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+
+        if (cal.before(Calendar.getInstance())) {
+            cal.add(Calendar.DATE, 1);
+        }
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
+    }
+    */
 }

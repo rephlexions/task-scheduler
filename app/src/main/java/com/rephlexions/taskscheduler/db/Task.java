@@ -11,14 +11,26 @@ public class Task {
     private String title;
     private String description;
     private String priority;
-    //private boolean isDone;
-    //private String taskDate;
+    private String status;
+    private long dueDate;
 
-    public Task(String title, String description, String priority) {
+    public Task(String title, String description, String priority, String status, long dueDate) {
         this.title = title;
         this.description = description;
         this.priority = priority;
+        this.status = status;
+        this.dueDate = dueDate;
     }
+/*
+    // Constructor for a task without a deadline
+    public Task(String title, String description, String priority, String status) {
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.status = status;
+    }
+
+ */
 
     public void setId(int id) {
         this.id = id;
@@ -38,6 +50,35 @@ public class Task {
 
     public String getPriority() {
         return priority;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public long getDueDate() {
+        // Expressed in milliseconds
+        return dueDate;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setDueDate(long dueDate) {
+        this.dueDate = dueDate;
     }
 
 

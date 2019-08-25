@@ -62,6 +62,9 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         else if(currentTask.getPriority().equals("High")){
             holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#E91E63")));
         }
+        else if (currentTask.getPriority() == null || currentTask.getPriority().equals("None")){
+            holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#808080")));
+        }
     }
 
     public Task getTaskAt(int position) {
