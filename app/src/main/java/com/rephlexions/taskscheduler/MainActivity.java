@@ -150,24 +150,31 @@ public class MainActivity extends AppCompatActivity {
             String status = data.getStringExtra(AddEditTaskActivity.EXTRA_STATUS);
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
-
-            //TODO: check IF duedate is empty -> create Task without a due date.
-
             long timeMilis = parseDate(date, time);
-            Log.d(TAG, "timeMilis: " + timeMilis);
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            Intent intent = new Intent(this, AlertReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-            alarmManager.set(AlarmManager.RTC_WAKEUP, timeMilis, pendingIntent);
-
 
             //Create and insert task into the database
             Task task = new Task(title, description, priority, status, timeMilis);
             taskViewModel.insert(task);
             Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
 
-        } else if (requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK) {
+            //TODO: check IF duedate is empty -> create Task without a due date.
+
+//            Intent alertIntent = new Intent(this, AlertReceiver.class);
+//            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//            PendingIntent pendingIntent = PendingIntent.getActivity(this.getApplicationContext(), 1,
+//                    alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeMilis, pendingIntent);
+
+
+//
+//            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//            Intent intent = new Intent(this, AlertReceiver.class);
+//            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+//
+//            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeMilis, pendingIntent);
+
+        }
+        else if (requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK) {
             int id = data.getIntExtra(AddEditTaskActivity.EXTRA_ID, -1);
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
@@ -183,13 +190,14 @@ public class MainActivity extends AppCompatActivity {
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
             String status = data.getStringExtra(AddEditTaskActivity.EXTRA_STATUS);
-            Task task = new Task(title, description, priority, status,timeMilis);
+            Task task = new Task(title, description, priority, status, timeMilis);
             task.setId(id);
             taskViewModel.update(task);
 
             Toast.makeText(this, "Task updated", Toast.LENGTH_SHORT).show();
 
-        } else {
+        }
+        else {
             Toast.makeText(this, "Task not saved", Toast.LENGTH_SHORT).show();
         }
     }
@@ -222,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public long parseDate(String date, String time){
+    public long parseDate(String date, String time) {
         SimpleDateFormat sdfYear = new SimpleDateFormat("yy");
         SimpleDateFormat sdfMonth = new SimpleDateFormat("MM");
         SimpleDateFormat sdfDay = new SimpleDateFormat("dd");
@@ -235,15 +243,15 @@ public class MainActivity extends AppCompatActivity {
         minute = Integer.valueOf(split[1]);
 
         Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(System.currentTimeMillis());
-        cal.clear();
+//        cal.setTimeInMillis(System.currentTimeMillis());
+//        cal.clear();
         cal.set(Calendar.YEAR, 2000 + Integer.parseInt(year));
-        cal.set(Calendar.MONTH, Integer.parseInt(month) -1);
+        cal.set(Calendar.MONTH, Integer.parseInt(month) - 1);
         cal.set(Calendar.DATE, Integer.parseInt(day));
-        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.HOUR_OF_DAY, hour + 2);
         cal.set(Calendar.MINUTE, minute);
         cal.set(Calendar.SECOND, 0);
-        Log.d(TAG, "parseDate: " + year + "-" + month + "-"+ day + "-" + hour + "-"+ minute + "--" + cal.getTimeInMillis());
+        Log.d(TAG, "parseDate: " + year + "-" + month + "-" + day + "-" + hour + "-" + minute + "--" + cal.getTimeInMillis());
         return cal.getTimeInMillis();
     }
 

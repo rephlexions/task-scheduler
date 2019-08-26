@@ -18,14 +18,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.rephlexions.taskscheduler.fragments.DatePickerFragment;
 import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
@@ -56,14 +59,17 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
     private EditText editTextTitle;
     private EditText editTextDescription;
+    private TextView textViewStatus;
     private RadioGroup radioGroup;
     private RadioButton radioButton;
     private String radioChoice;
     private CheckBox checkBox;
+    private Switch switchButton;
     private ImageButton deleteButton;
     private TextView datetextView;
     private TextView timetextView;
-    private Calendar c = Calendar.getInstance();
+    private Calendar cal = Calendar.getInstance();
+    private String taskStatus = "pending";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +78,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
         editTextTitle = findViewById(R.id.edit_text_title);
         editTextDescription = findViewById(R.id.edit_text_description);
+        textViewStatus = findViewById(R.id.text_view_status);
         deleteButton = (ImageButton) findViewById(R.id.delete_datetime_button);
         datetextView = (TextView) findViewById(R.id.text_view_date);
         timetextView = (TextView) findViewById(R.id.text_view_time);
@@ -81,6 +88,9 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         final RadioButton lowPriority = (RadioButton) findViewById(R.id.radio_priority_low);
         final RadioButton mediumPriority = (RadioButton) findViewById(R.id.radio_priority_medium);
         final RadioButton highPriority = (RadioButton) findViewById(R.id.radio_priority_high);
+
+        switchButton = (Switch) findViewById(R.id.priority_switch);
+        checkBox = (CheckBox) findViewById(R.id.task_checkBox);
 
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -95,6 +105,48 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
                     radioChoice = "Medium";
                 } else {
                     radioChoice = "High";
+                }
+            }
+        });
+
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    taskStatus = "ongoing";
+                    Toast.makeText(AddEditTaskActivity.this, "Task is ongoing", Toast.LENGTH_SHORT).show();
+                } else {
+                    taskStatus = "pending";
+                    Toast.makeText(AddEditTaskActivity.this, "Task is pending", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    if(!editTextTitle.getText().toString().isEmpty()){
+                        taskStatus = "completed";
+                        switchButton.setChecked(false);
+                        switchButton.setClickable(false);
+                        textViewStatus.setPaintFlags(editTextTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        editTextTitle.setPaintFlags(editTextTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        Toast.makeText(AddEditTaskActivity.this, "Task completed", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        checkBox.setChecked(false);
+                        Toast.makeText(AddEditTaskActivity.this, "Task cannot be empty", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    taskStatus = "pending";
+                    switchButton.setClickable(true);
+                    if(!editTextTitle.getText().toString().isEmpty()){
+                        editTextTitle.setPaintFlags(0);
+                        textViewStatus.setPaintFlags(0);
+                    }
                 }
             }
         });
@@ -163,6 +215,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         String date = datetextView.getText().toString();
         String time = timetextView.getText().toString();
 
+
         if (title.trim().isEmpty()) {
             Toast.makeText(this, "Please insert a Title and a Description", Toast.LENGTH_SHORT).show();
             return;
@@ -177,12 +230,20 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         data.putExtra(EXTRA_DATE, date);
         data.putExtra(EXTRA_TIME, time);
         // TODO: create textview inside activity and refactor
-        data.putExtra(EXTRA_STATUS, "pending");
+        data.putExtra(EXTRA_STATUS, taskStatus);
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {
             data.putExtra(EXTRA_ID, id);
         }
+
+        //FIXME: Temporary alarm test.
+        Intent alertIntent = new Intent(this, AlertReceiver.class);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1,
+                alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
+
 
         setResult(RESULT_OK, data);
         // Close activity
@@ -210,10 +271,10 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        String currentDateString = DateFormat.getDateInstance(DateFormat.SHORT).format(c.getTime());
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String currentDateString = DateFormat.getDateInstance(DateFormat.SHORT).format(cal.getTime());
         if (!currentDateString.isEmpty()) {
             datetextView.setText(currentDateString);
             deleteButton.setVisibility(View.VISIBLE);
@@ -222,21 +283,11 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        c.set(Calendar.MINUTE, minute);
-        c.set(Calendar.SECOND, 0);
+        cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.SECOND, 0);
         timetextView.setText(hourOfDay + ":" + minute);
         deleteButton.setVisibility(View.VISIBLE);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, AlertReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        if (c.before(Calendar.getInstance())) {
-            c.add(Calendar.DATE, 1);
-        }
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
-
-
     }
 
     private void startAlarm(@NonNull Calendar c) {
@@ -247,10 +298,15 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
         /*
 
-Intent alertIntent = new Intent(this, AlertReceiver.class);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),
-                PendingIntent.getBroadcast(this,1,alertIntent,PendingIntent.FLAG_UPDATE_CURRENT));
+        Intent intent = new Intent(this, AlertReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        if (c.before(Calendar.getInstance())) {
+            c.add(Calendar.DATE, 1);
+        }
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+
+
          */
 
     }
