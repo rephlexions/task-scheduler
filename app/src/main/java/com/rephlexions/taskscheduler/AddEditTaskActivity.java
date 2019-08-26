@@ -46,11 +46,12 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             "com.example.taskscheduler.EXTRA_DESCRIPTION";
     public static final String EXTRA_PRIORITY =
             "com.example.taskscheduler.EXTRA_PRIORITY";
+    public static final String EXTRA_STATUS =
+            "com.example.taskscheduler.EXTRA_STATUS";
     public static final String EXTRA_DATE =
             "com.example.taskscheduler.EXTRA_DATE";
     public static final String EXTRA_TIME =
             "com.example.taskscheduler.EXTRA_TIME";
-    private static final String TAG = "";
 
 
     private EditText editTextTitle;
@@ -175,6 +176,8 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         data.putExtra(EXTRA_PRIORITY, radioChoice);
         data.putExtra(EXTRA_DATE, date);
         data.putExtra(EXTRA_TIME, time);
+        // TODO: create textview inside activity and refactor
+        data.putExtra(EXTRA_STATUS, "pending");
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {
@@ -224,7 +227,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         c.set(Calendar.SECOND, 0);
         timetextView.setText(hourOfDay + ":" + minute);
         deleteButton.setVisibility(View.VISIBLE);
-/*
+
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlertReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
@@ -232,7 +235,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             c.add(Calendar.DATE, 1);
         }
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
-*/
+
 
     }
 

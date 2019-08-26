@@ -33,4 +33,5 @@ public interface TaskDao {
 
     @Query("SELECT id, dueDate FROM TASK_TABLE ")
     LiveData<List<Task>> getAllDueDates();
+
 }

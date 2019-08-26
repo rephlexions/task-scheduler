@@ -26,8 +26,10 @@ public interface TaskCategoryJoinDao {
     @Query("SELECT * FROM TASK_TABLE INNER JOIN TASK_CATEGORIES_JOIN_TABLE " +
             "ON TASK_TABLE.id=TASK_CATEGORIES_JOIN_TABLE.taskID WHERE categoryID=:categoryId")
     LiveData<List<Task>> getTasksForCategories(final int categoryId);
-
+/*
     @Query("SELECT * FROM CATEGORIES_TABLE INNER JOIN TASK_CATEGORIES_JOIN_TABLE " +
             "ON CATEGORIES_TABLE.id=TASK_CATEGORIES_JOIN_TABLE.categoryID WHERE taskID=:taskID")
     LiveData<List<Task>> getCategoriesForTasks(final int taskID);
+
+ */
 }

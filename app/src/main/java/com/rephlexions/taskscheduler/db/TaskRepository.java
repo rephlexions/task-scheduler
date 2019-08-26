@@ -21,6 +21,7 @@ public class TaskRepository {
         taskDao = database.taskDao();
         categoryDao = database.categoryDao();
         taskCategoryJoinDao = database.taskCategoryJoinDao();
+
         allTasks = taskDao.getAllTasks();
         allDueDates = taskDao.getAllDueDates();
         allCategories = categoryDao.getAllCategories();
@@ -50,7 +51,6 @@ public class TaskRepository {
     public LiveData<List<Task>> getAllDueDates() {
         return allDueDates;
     }
-
 
     //Room doesnt allow database operations on the main thread (app crash). Use async tasks
     private static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Void> {
@@ -108,9 +108,6 @@ public class TaskRepository {
             return null;
         }
     }
-
-
-
 
 
 

@@ -56,8 +56,8 @@ public class Task {
         return status;
     }
 
+    // counted in milliseconds
     public long getDueDate() {
-        // Expressed in milliseconds
         return dueDate;
     }
 
