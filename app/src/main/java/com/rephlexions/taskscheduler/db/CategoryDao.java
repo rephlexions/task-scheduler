@@ -23,4 +23,9 @@ public interface CategoryDao {
 
     @Query("SELECT * FROM CATEGORIES_TABLE ORDER BY ID ASC")
     LiveData<List<Category>> getAllCategories();
+
+    @Query("SELECT * FROM CATEGORIES_TABLE ORDER BY ID ASC")
+    List<Category> getAllCategoriesList();
+
+
 }

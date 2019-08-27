@@ -3,6 +3,7 @@ package com.rephlexions.taskscheduler;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -35,7 +36,9 @@ import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
 import com.rephlexions.taskscheduler.reminders.AlertReceiver;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 public class AddEditTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener {
@@ -55,6 +58,9 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             "com.example.taskscheduler.EXTRA_DATE";
     public static final String EXTRA_TIME =
             "com.example.taskscheduler.EXTRA_TIME";
+    public static final String EXTRA_MILLI =
+            "com.example.taskscheduler.EXTRA_MILLI";
+    private static final String TAG = "";
 
 
     private EditText editTextTitle;
@@ -70,6 +76,8 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     private TextView timetextView;
     private Calendar cal = Calendar.getInstance();
     private String taskStatus = "pending";
+
+    private TaskViewModel taskViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +99,10 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
         switchButton = (Switch) findViewById(R.id.priority_switch);
         checkBox = (CheckBox) findViewById(R.id.task_checkBox);
+
+        taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
+        Log.d(TAG, "onCreate: " + taskViewModel.getAllCategoriesList());
+
 
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -126,24 +138,22 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    if(!editTextTitle.getText().toString().isEmpty()){
+                if (isChecked) {
+                    if (!editTextTitle.getText().toString().isEmpty()) {
                         taskStatus = "completed";
                         switchButton.setChecked(false);
                         switchButton.setClickable(false);
                         textViewStatus.setPaintFlags(editTextTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                         editTextTitle.setPaintFlags(editTextTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                         Toast.makeText(AddEditTaskActivity.this, "Task completed", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
+                    } else {
                         checkBox.setChecked(false);
                         Toast.makeText(AddEditTaskActivity.this, "Task cannot be empty", Toast.LENGTH_SHORT).show();
                     }
-                }
-                else{
+                } else {
                     taskStatus = "pending";
                     switchButton.setClickable(true);
-                    if(!editTextTitle.getText().toString().isEmpty()){
+                    if (!editTextTitle.getText().toString().isEmpty()) {
                         editTextTitle.setPaintFlags(0);
                         textViewStatus.setPaintFlags(0);
                     }
@@ -171,6 +181,12 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             setTitle("Edit Task");
             editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
+            long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1L);
+            String[] dateTime = getDate(dateTimeLong, "MM/dd/yy HH:mm");
+            datetextView.setText(dateTime[0]);
+            timetextView.setText(dateTime[1]);
+            taskStatus = intent.getStringExtra(EXTRA_STATUS);
+
             if (intent.getStringExtra(EXTRA_PRIORITY).equals("None")) {
                 nonePriority.setChecked(true);
             } else if (intent.getStringExtra(EXTRA_PRIORITY).equals("Low")) {
@@ -180,7 +196,6 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             } else {
                 highPriority.setChecked(true);
             }
-            //numberPickerPriority.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
         } else {
             setTitle("Add Task");
         }
@@ -229,7 +244,6 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         data.putExtra(EXTRA_PRIORITY, radioChoice);
         data.putExtra(EXTRA_DATE, date);
         data.putExtra(EXTRA_TIME, time);
-        // TODO: create textview inside activity and refactor
         data.putExtra(EXTRA_STATUS, taskStatus);
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
@@ -290,6 +304,19 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         deleteButton.setVisibility(View.VISIBLE);
     }
 
+
+    public static String[] getDate(long milliSeconds, String dateFormat) {
+        // Create a DateFormatter object for displaying date in specified format.
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        String date = formatter.format(calendar.getTime());
+        String[] split = date.split(" ");
+        return split;
+    }
+
     private void startAlarm(@NonNull Calendar c) {
         Intent alertIntent = new Intent(this, AlertReceiver.class);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -310,4 +337,5 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
          */
 
     }
+
 }

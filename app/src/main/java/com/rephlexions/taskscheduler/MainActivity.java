@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawer;
     private Button navButton;
 
-
     String date, time;
     String year, month, day;
     int hour, minute;
@@ -113,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(AddEditTaskActivity.EXTRA_TITLE, task.getTitle());
                 intent.putExtra(AddEditTaskActivity.EXTRA_DESCRIPTION, task.getDescription());
                 intent.putExtra(AddEditTaskActivity.EXTRA_PRIORITY, task.getPriority());
+                Log.d(TAG, "onItemClick: " + task.getDueDate());
+                intent.putExtra(AddEditTaskActivity.EXTRA_MILLI, task.getDueDate());
                 startActivityForResult(intent, EDIT_TASK_REQUEST);
             }
         });
@@ -150,10 +151,11 @@ public class MainActivity extends AppCompatActivity {
             String status = data.getStringExtra(AddEditTaskActivity.EXTRA_STATUS);
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
-            long timeMilis = parseDate(date, time);
+            long timeMillis = parseDate(date, time);
+            Toast.makeText(this, "" + timeMillis, Toast.LENGTH_SHORT).show();
 
             //Create and insert task into the database
-            Task task = new Task(title, description, priority, status, timeMilis);
+            Task task = new Task(title, description, priority, status, timeMillis);
             taskViewModel.insert(task);
             Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
 
@@ -173,31 +175,30 @@ public class MainActivity extends AppCompatActivity {
 //
 //            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeMilis, pendingIntent);
 
-        }
-        else if (requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK) {
+        } else if (requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK) {
             int id = data.getIntExtra(AddEditTaskActivity.EXTRA_ID, -1);
-            date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
-            time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
+
             //Don't update id ID is not valid
             if (id == -1) {
                 Toast.makeText(this, "Task can't be updated", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            long timeMilis = parseDate(date, time);
-
             String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
             String status = data.getStringExtra(AddEditTaskActivity.EXTRA_STATUS);
-            Task task = new Task(title, description, priority, status, timeMilis);
+            date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
+            time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
+            long timeMillis = parseDate(date, time);
+
+            Task task = new Task(title, description, priority, status, timeMillis);
             task.setId(id);
             taskViewModel.update(task);
 
             Toast.makeText(this, "Task updated", Toast.LENGTH_SHORT).show();
 
-        }
-        else {
+        } else {
             Toast.makeText(this, "Task not saved", Toast.LENGTH_SHORT).show();
         }
     }
@@ -248,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
         cal.set(Calendar.YEAR, 2000 + Integer.parseInt(year));
         cal.set(Calendar.MONTH, Integer.parseInt(month) - 1);
         cal.set(Calendar.DATE, Integer.parseInt(day));
-        cal.set(Calendar.HOUR_OF_DAY, hour + 2);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minute);
         cal.set(Calendar.SECOND, 0);
         Log.d(TAG, "parseDate: " + year + "-" + month + "-" + day + "-" + hour + "-" + minute + "--" + cal.getTimeInMillis());

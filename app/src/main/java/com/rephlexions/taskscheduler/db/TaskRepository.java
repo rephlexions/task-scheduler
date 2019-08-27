@@ -14,6 +14,7 @@ public class TaskRepository {
     private LiveData<List<Task>> allTasks;
     private LiveData<List<Task>> allDueDates;
     private LiveData<List<Category>> allCategories;
+    private List<Category> allCategoriesList;
 
     public TaskRepository(Application application) {
         //Since application is a subclass of context we can use it as a context to create the database instance
@@ -25,6 +26,7 @@ public class TaskRepository {
         allTasks = taskDao.getAllTasks();
         allDueDates = taskDao.getAllDueDates();
         allCategories = categoryDao.getAllCategories();
+        allCategoriesList = categoryDao.getAllCategoriesList();
     }
 
     // The API that the repository exposes to the ViewModel
@@ -170,6 +172,10 @@ public class TaskRepository {
 
     public LiveData<List<Category>> getAllCategories() {
         return allCategories;
+    }
+
+    public List<Category> getAllCategoriesList(){
+        return allCategoriesList;
     }
 
 
