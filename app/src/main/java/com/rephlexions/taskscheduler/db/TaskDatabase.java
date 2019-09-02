@@ -65,8 +65,6 @@ public abstract class TaskDatabase extends RoomDatabase {
             categoryDao.insert(new Category("Work"));
             taskCategoryJoinDao.insert(new TaskCategoryJoin(1,1));
             taskCategoryJoinDao.insert(new TaskCategoryJoin(2,1));
-            Log.d(TAG, "doInBackground: " + taskCategoryJoinDao);
-
             return null;
         }
     }

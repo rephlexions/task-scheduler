@@ -2,7 +2,10 @@ package com.rephlexions.taskscheduler;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.rephlexions.taskscheduler.db.Category;
 import com.rephlexions.taskscheduler.db.Task;
+import com.rephlexions.taskscheduler.db.TaskDatabase;
+import com.rephlexions.taskscheduler.db.TaskRepository;
 import com.rephlexions.taskscheduler.reminders.AlertReceiver;
 
 import androidx.annotation.NonNull;
@@ -33,15 +36,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     // Constants to distinguish between different requests
@@ -59,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
     String date, time;
     String year, month, day;
     int hour, minute;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +88,9 @@ public class MainActivity extends AppCompatActivity {
                 adapter.submitList(tasks);
             }
         });
+
+        final ArrayList<Category> arrayOfUsers = new ArrayList<Category>();
+
 
         // Delete on swipe
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,

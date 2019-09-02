@@ -1,8 +1,14 @@
 package com.rephlexions.taskscheduler;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.AlarmManager;
@@ -12,12 +18,14 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -25,20 +33,28 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.rephlexions.taskscheduler.db.Category;
 import com.rephlexions.taskscheduler.fragments.DatePickerFragment;
 import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
 import com.rephlexions.taskscheduler.reminders.AlertReceiver;
+import com.rephlexions.taskscheduler.utils.CategoryListAdapter;
+
+import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 public class AddEditTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener {
@@ -76,8 +92,9 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     private TextView timetextView;
     private Calendar cal = Calendar.getInstance();
     private String taskStatus = "pending";
-
+    private Spinner categories;
     private TaskViewModel taskViewModel;
+    private TextView categoryTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +107,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         deleteButton = (ImageButton) findViewById(R.id.delete_datetime_button);
         datetextView = (TextView) findViewById(R.id.text_view_date);
         timetextView = (TextView) findViewById(R.id.text_view_time);
+        categoryTextView = (TextView) findViewById(R.id.text_view_category);
 
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
         final RadioButton nonePriority = (RadioButton) findViewById(R.id.radio_priority_none);
@@ -100,10 +118,56 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         switchButton = (Switch) findViewById(R.id.priority_switch);
         checkBox = (CheckBox) findViewById(R.id.task_checkBox);
 
+
+        categories = findViewById(R.id.categories_spinner);
+        final CategoryListAdapter adapter = new CategoryListAdapter();
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
-        Log.d(TAG, "onCreate: " + taskViewModel.getAllCategoriesList());
+        final ArrayList<String> playerNames = new ArrayList<>();
+        taskViewModel.getAllCategories().observe(this, new Observer<List<Category>>() {
+            @Override
+            public void onChanged(@Nullable final List<Category> category) {
+                // Update the cached copy of the words in the adapter.
+                // Update scroll view here
+                adapter.setCategory(category);
+                for (int i = 0; i < adapter.getItemCount(); i++) {
+                    playerNames.add(String.valueOf(category.get(i).getName()));
+                }
+                createSpinners(playerNames);
+            }
+        });
 
+//        // Create the observer which updates the UI.
+//        final Observer<Category> nameObserver = new Observer<Category>() {
+//            @Override
+//            public void onChanged(<Category> newName) {
+//                // Update the UI, in this case, a TextView.
+//                Log.d(TAG, "onChanged: " + newName.getValue());
+//            }
+//        };
 
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+
+//        categoryTextView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                FragmentTransaction fragmentTransaction;
+//                FragmentManager fragmentManager;
+//
+//                Class fragmentClass=null;
+//                private Fragment mFragment;
+//
+//                ListFragment listFragment;  // fragment instance of current fragment
+//
+//                fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//
+//                mFragment = new ListFragment(); // CreateNewNote is fragment you want to display
+//
+//                fragmentTransaction.replace(R.id.content_fragment, mFragment);  // content_fragment is id of FrameLayout(XML file) where fragment will be displayed
+//
+//                fragmentTransaction.addToBackStack(frag_no); //add fragment to stack
+//                fragmentTransaction.hide(currentFragment).commit();  // hide current fragment
+//            }
+//        });
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -317,6 +381,12 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         return split;
     }
 
+    private void createSpinners(ArrayList<String> listToUse) {
+        ArrayAdapter<String> adp1 = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, listToUse);
+        categories.setAdapter(adp1);
+
+    }
+
     private void startAlarm(@NonNull Calendar c) {
         Intent alertIntent = new Intent(this, AlertReceiver.class);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -337,5 +407,8 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
          */
 
     }
+
+
+
 
 }

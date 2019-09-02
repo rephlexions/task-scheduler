@@ -14,7 +14,6 @@ public class TaskRepository {
     private LiveData<List<Task>> allTasks;
     private LiveData<List<Task>> allDueDates;
     private LiveData<List<Category>> allCategories;
-    private List<Category> allCategoriesList;
 
     public TaskRepository(Application application) {
         //Since application is a subclass of context we can use it as a context to create the database instance
@@ -26,7 +25,7 @@ public class TaskRepository {
         allTasks = taskDao.getAllTasks();
         allDueDates = taskDao.getAllDueDates();
         allCategories = categoryDao.getAllCategories();
-        allCategoriesList = categoryDao.getAllCategoriesList();
+        //allCategoriesList = categoryDao.getAllCategoriesList();
     }
 
     // The API that the repository exposes to the ViewModel
@@ -111,11 +110,6 @@ public class TaskRepository {
         }
     }
 
-
-
-
-
-
     public void insertCategory(Category category) {
         new InsertCategoryAsyncTask(categoryDao).execute(category);
     }
@@ -174,9 +168,36 @@ public class TaskRepository {
         return allCategories;
     }
 
-    public List<Category> getAllCategoriesList(){
-        return allCategoriesList;
-    }
+
+//    private static class GetCategoriesAsyncTask extends AsyncTask<Void, Void,  LiveData<Category> > {
+//        private CategoryDao categoryDao;
+//
+//        private GetCategoriesAsyncTask(CategoryDao categoryDao) {
+//            this.categoryDao = categoryDao;
+//        }
+//
+//        @Override
+//        protected LiveData<Category> doInBackground(Void... voids) {
+//            return categoryDao.getAllCategories();
+//        }
+//    }
+
+    //    public LiveData<List<Category>> getAllCategories() {
+//        return allCategories;
+//    }
+//    private static class getCategoriesAsyncTask extends AsyncTask<Void, Void, Void> {
+//        private CategoryDao categoryDao;
+//
+//        private getCategoriesAsyncTask(CategoryDao categoryDao) {
+//            this.categoryDao = categoryDao;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            categoryDao.getAllCategoriesList();
+//            return null;
+//        }
+//    }
 
 
 }
