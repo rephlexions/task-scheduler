@@ -6,4 +6,27 @@
         android:title="Delete all tasks"
         app:showAsAction="never"
         />
+
+    <item
+        android:id="@+id/item3"
+        android:title="Filter by"
+        app:showAsAction="never">
+
+        <menu>
+
+            <item
+                android:id="@+id/filter_dueDate"
+                android:title="Due date" />
+
+            <item
+                android:id="@+id/filter_category"
+                android:title="Category" >
+                <menu>
+
+                </menu>
+            </item>
+
+        </menu>
+
+    </item>
 </menu>

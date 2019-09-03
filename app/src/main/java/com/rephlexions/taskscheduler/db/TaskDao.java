@@ -34,4 +34,7 @@ public interface TaskDao {
     @Query("SELECT id, dueDate FROM TASK_TABLE ")
     LiveData<List<Task>> getAllDueDates();
 
+    @Query("SELECT * FROM TASK_TABLE WHERE category = :category")
+    LiveData<List<Task>> getAllTasksByCategory(String category);
+
 }

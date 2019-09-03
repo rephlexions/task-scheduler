@@ -4,10 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -18,13 +14,13 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -39,7 +35,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.rephlexions.taskscheduler.db.Category;
 import com.rephlexions.taskscheduler.fragments.AddCategoryDialog;
@@ -48,15 +43,11 @@ import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
 import com.rephlexions.taskscheduler.reminders.AlertReceiver;
 import com.rephlexions.taskscheduler.utils.CategoryListAdapter;
 
-import org.w3c.dom.Text;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
-import java.util.concurrent.Executors;
 
 public class AddEditTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener, AddCategoryDialog.AddCategoryDialogListener {
@@ -80,6 +71,10 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             "com.example.taskscheduler.EXTRA_MILLI";
     public static final String EXTRA_CATEGORY =
             "com.example.taskscheduler.EXTRA_CATEGORY";
+    public static final String EXTRA_CATEGORIESLIST =
+            "com.example.taskscheduler.EXTRA_CATEGORIESLIST";
+
+    private static final String TAG = "";
 
     private EditText editTextTitle;
     private EditText editTextDescription;
@@ -146,13 +141,12 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 if (selectedItem.equals("Add category")) {
                     openDialog();
-
+                    Toast.makeText(AddEditTaskActivity.this, "" + categoriesSpinner.getCount(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 
@@ -288,7 +282,8 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         String date = datetextView.getText().toString();
         String time = timetextView.getText().toString();
         String category = categoriesSpinner.getSelectedItem().toString();
-
+        ArrayList<String> categoriesList = retrieveAllItems(categoriesSpinner);
+        categoriesList.remove(categoriesList.size() -1);
 
         if (title.trim().isEmpty()) {
             Toast.makeText(this, "Please insert a Title and a Description", Toast.LENGTH_SHORT).show();
@@ -305,6 +300,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         data.putExtra(EXTRA_TIME, time);
         data.putExtra(EXTRA_STATUS, taskStatus);
         data.putExtra(EXTRA_CATEGORY, category);
+        data.putStringArrayListExtra(EXTRA_CATEGORIESLIST, categoriesList);
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {
@@ -379,7 +375,6 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
     private void createSpinners(ArrayList<String> listToUse) {
         ArrayAdapter<String> adp1 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listToUse);
-        categoriesSpinner.setAdapter(null);
         categoriesSpinner.setAdapter(adp1);
     }
 
@@ -410,5 +405,15 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         Toast.makeText(this, "" + name , Toast.LENGTH_SHORT).show();
         Category category = new Category(name);
         taskViewModel.insertCategory(category);
+    }
+    public ArrayList<String> retrieveAllItems(Spinner theSpinner) {
+        Adapter adapter = theSpinner.getAdapter();
+        int n = adapter.getCount();
+        final ArrayList<String> categoryNames = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            String user =  (String) adapter.getItem(i);
+            categoryNames.add(user);
+        }
+        return categoryNames;
     }
 }

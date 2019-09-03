@@ -7,8 +7,10 @@ import com.rephlexions.taskscheduler.db.Task;
 import com.rephlexions.taskscheduler.db.TaskDatabase;
 import com.rephlexions.taskscheduler.db.TaskRepository;
 import com.rephlexions.taskscheduler.reminders.AlertReceiver;
+import com.rephlexions.taskscheduler.utils.CategoryListAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -65,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     String date, time;
     String year, month, day;
     int hour, minute;
+    ArrayList<String> categoriesList = new ArrayList<>();
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +93,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final CategoryListAdapter categoryAdapter = new CategoryListAdapter();
+        taskViewModel.getAllCategories().observe(this, new Observer<List<Category>>() {
+            @Override
+            public void onChanged(@Nullable final List<Category> category) {
+                // Update the cached copy of the words in the adapter.
+                // Update scroll view here
+                categoryAdapter.setCategory(category);
+                for (int i = 0; i < categoryAdapter.getItemCount(); i++) {
+                    categoriesList.add(String.valueOf(category.get(i).getName()));
+                }
+            }
+        });
 
         // Delete on swipe
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
@@ -148,6 +164,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        final CategoryListAdapter categoryAdapter = new CategoryListAdapter();
+        taskViewModel.getAllCategories().observe(this, new Observer<List<Category>>() {
+            @Override
+            public void onChanged(@Nullable final List<Category> category) {
+                // Update the cached copy of the words in the adapter.
+                // Update scroll view here
+                categoryAdapter.setCategory(category);
+                categoriesList.clear();
+                for (int i = 0; i < categoryAdapter.getItemCount(); i++) {
+                    categoriesList.add(String.valueOf(category.get(i).getName()));
+                }
+            }
+        });
+        SubMenu categoryMenu = menu.findItem(R.id.filter_category).getSubMenu();
+        categoryMenu.clear();
+        for (int i = 0; i < categoriesList.size(); i++) {
+            categoryMenu.add(0, i, Menu.NONE, categoriesList.get(i));
+        }
+
+
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -157,7 +198,8 @@ public class MainActivity extends AppCompatActivity {
             String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
             String status = data.getStringExtra(AddEditTaskActivity.EXTRA_STATUS);
             String category = data.getStringExtra(AddEditTaskActivity.EXTRA_CATEGORY);
-            Toast.makeText(this, "" + category, Toast.LENGTH_SHORT).show();
+            categoriesList = data.getStringArrayListExtra(AddEditTaskActivity.EXTRA_CATEGORIESLIST);
+            Log.d(TAG, "onActivityResult: " + categoriesList);
 
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
@@ -200,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
             String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
             String status = data.getStringExtra(AddEditTaskActivity.EXTRA_STATUS);
             String category = data.getStringExtra(AddEditTaskActivity.EXTRA_CATEGORY);
+            ArrayList<String> categoriesList = data.getStringArrayListExtra(AddEditTaskActivity.EXTRA_CATEGORIESLIST);
 
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
@@ -220,11 +263,31 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
+        SubMenu categoryMenu = menu.findItem(R.id.filter_category).getSubMenu();
+        categoryMenu.clear();
+        for (int i = 0; i < categoriesList.size(); i++) {
+            categoryMenu.add(0, i, Menu.NONE, categoriesList.get(i));
+        }
+        this.menu = menu;
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int n = categoriesList.size();
+        //item.getSubMenu().size()
+        for(int i = 0; i < n; i++){
+            if(item.getItemId() == i){
+                String s = categoriesList.get(i);
+                taskViewModel.getAllTasksByCategory(s).observe(this, new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        // Update RecyclerView
+                        adapter.submitList(tasks);
+                    }
+                });
+            }
+        }
         switch (item.getItemId()) {
             case R.id.delete_all_tasks:
                 taskViewModel.deleteAllTasks();

@@ -19,6 +19,8 @@ import com.rephlexions.taskscheduler.db.Task;
 
 import org.w3c.dom.Text;
 
+import static com.rephlexions.taskscheduler.AddEditTaskActivity.getDate;
+
 
 public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
     private onItemClickListener listener;
@@ -55,7 +57,11 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
     public void onBindViewHolder(@NonNull TaskHolder holder, int position) {
         Task currentTask = getItem(position);
         holder.textViewTitle.setText(currentTask.getTitle());
-        holder.textViewPriority.setText(currentTask.getPriority());
+
+        String[] dateTime = getDate(currentTask.getDueDate(), "MM/dd/yy HH:mm");
+        holder.textViewDate.setText(dateTime[0]);
+        holder.textViewTime.setText(dateTime[1]);
+
         if(currentTask.getDescription().isEmpty()){
             holder.descriptionIcon.setVisibility(View.INVISIBLE);
         }
@@ -83,13 +89,17 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         private TextView textViewPriority;
         private CheckBox checkBox;
         private ImageView descriptionIcon;
+        private TextView textViewDate;
+        private TextView textViewTime;
 
         public TaskHolder(@NonNull View itemView) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.text_view_title);
-            textViewPriority = itemView.findViewById(R.id.text_view_priority);
+            //textViewPriority = itemView.findViewById(R.id.text_view_priority);
             checkBox = itemView.findViewById(R.id.checkBox);
             descriptionIcon = itemView.findViewById(R.id.description_icon);
+            textViewDate = itemView.findViewById(R.id.task_alarm_date);
+            textViewTime = itemView.findViewById(R.id.task_alarm_time);
             boolean checked = checkBox.isChecked();
 
             //Set listener on card view items

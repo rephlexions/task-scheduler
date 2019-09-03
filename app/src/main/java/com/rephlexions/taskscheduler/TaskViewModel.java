@@ -5,8 +5,6 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import com.rephlexions.taskscheduler.db.Category;
 import com.rephlexions.taskscheduler.db.Task;
 import com.rephlexions.taskscheduler.db.TaskRepository;
@@ -23,7 +21,10 @@ public class TaskViewModel extends AndroidViewModel {
         repository = new TaskRepository(application);
         allTasks = repository.getAllTasks();
         allCategories = repository.getAllCategories();
-        //allCategories = repository.getAllCategoriesList();
+    }
+
+    LiveData<List<Task>> getAllTasksByCategory(String category){
+        return repository.getAllTasksByCategory(category);
     }
 
     public void insert(Task task) {
@@ -57,7 +58,6 @@ public class TaskViewModel extends AndroidViewModel {
     public void deleteCategory(Category category) {
         repository.deleteCategory(category);
     }
-
 
     public LiveData<List<Category>> getAllCategories(){return allCategories;}
 

@@ -4,7 +4,6 @@ import android.app.Application;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
@@ -15,17 +14,23 @@ public class TaskRepository {
     private LiveData<List<Task>> allTasks;
     private LiveData<List<Task>> allDueDates;
     private LiveData<List<Category>> allCategories;
+    private LiveData<List<Task>> allTasksByCategory;
 
     public TaskRepository(Application application) {
         //Since application is a subclass of context we can use it as a context to create the database instance
         TaskDatabase database = TaskDatabase.getInstance(application);
         taskDao = database.taskDao();
         categoryDao = database.categoryDao();
-        taskCategoryJoinDao = database.taskCategoryJoinDao();
+        //taskCategoryJoinDao = database.taskCategoryJoinDao();
 
         allTasks = taskDao.getAllTasks();
         allDueDates = taskDao.getAllDueDates();
         allCategories = categoryDao.getAllCategories();
+
+    }
+
+    public LiveData<List<Task>> getAllTasksByCategory(String category){
+        return taskDao.getAllTasksByCategory(category);
     }
 
     // The API that the repository exposes to the ViewModel
