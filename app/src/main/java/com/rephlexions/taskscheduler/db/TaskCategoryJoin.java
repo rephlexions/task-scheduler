@@ -25,7 +25,6 @@ public class TaskCategoryJoin {
         this.categoryID = categoryID;
     }
 
-
     public int getTaskID() {
         return taskID;
     }

@@ -1,6 +1,7 @@
 package com.rephlexions.taskscheduler.db;
 
 import androidx.room.Entity;
+import androidx.room.OnConflictStrategy;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "categories_table")

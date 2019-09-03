@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -41,6 +42,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.rephlexions.taskscheduler.db.Category;
+import com.rephlexions.taskscheduler.fragments.AddCategoryDialog;
 import com.rephlexions.taskscheduler.fragments.DatePickerFragment;
 import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
 import com.rephlexions.taskscheduler.reminders.AlertReceiver;
@@ -57,7 +59,7 @@ import java.util.TimeZone;
 import java.util.concurrent.Executors;
 
 public class AddEditTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
-        TimePickerDialog.OnTimeSetListener {
+        TimePickerDialog.OnTimeSetListener, AddCategoryDialog.AddCategoryDialogListener {
 
     // Intent extra keys. Uses package name to keep them unique
     public static final String EXTRA_ID =
@@ -76,8 +78,8 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             "com.example.taskscheduler.EXTRA_TIME";
     public static final String EXTRA_MILLI =
             "com.example.taskscheduler.EXTRA_MILLI";
-    private static final String TAG = "";
-
+    public static final String EXTRA_CATEGORY =
+            "com.example.taskscheduler.EXTRA_CATEGORY";
 
     private EditText editTextTitle;
     private EditText editTextDescription;
@@ -92,7 +94,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     private TextView timetextView;
     private Calendar cal = Calendar.getInstance();
     private String taskStatus = "pending";
-    private Spinner categories;
+    private Spinner categoriesSpinner;
     private TaskViewModel taskViewModel;
     private TextView categoryTextView;
 
@@ -119,55 +121,41 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         checkBox = (CheckBox) findViewById(R.id.task_checkBox);
 
 
-        categories = findViewById(R.id.categories_spinner);
-        final CategoryListAdapter adapter = new CategoryListAdapter();
+        categoriesSpinner = findViewById(R.id.categories_spinner);
+
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
-        final ArrayList<String> playerNames = new ArrayList<>();
+        final CategoryListAdapter adapter = new CategoryListAdapter();
         taskViewModel.getAllCategories().observe(this, new Observer<List<Category>>() {
             @Override
             public void onChanged(@Nullable final List<Category> category) {
                 // Update the cached copy of the words in the adapter.
                 // Update scroll view here
+                final ArrayList<String> categoryNames = new ArrayList<>();
                 adapter.setCategory(category);
                 for (int i = 0; i < adapter.getItemCount(); i++) {
-                    playerNames.add(String.valueOf(category.get(i).getName()));
+                    categoryNames.add(String.valueOf(category.get(i).getName()));
                 }
-                createSpinners(playerNames);
+                categoryNames.add("Add category");
+                createSpinners(categoryNames);
             }
         });
 
-//        // Create the observer which updates the UI.
-//        final Observer<Category> nameObserver = new Observer<Category>() {
-//            @Override
-//            public void onChanged(<Category> newName) {
-//                // Update the UI, in this case, a TextView.
-//                Log.d(TAG, "onChanged: " + newName.getValue());
-//            }
-//        };
+        categoriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedItem = parent.getItemAtPosition(position).toString();
+                if (selectedItem.equals("Add category")) {
+                    openDialog();
 
-        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+                }
+            }
 
-//        categoryTextView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                FragmentTransaction fragmentTransaction;
-//                FragmentManager fragmentManager;
-//
-//                Class fragmentClass=null;
-//                private Fragment mFragment;
-//
-//                ListFragment listFragment;  // fragment instance of current fragment
-//
-//                fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//
-//                mFragment = new ListFragment(); // CreateNewNote is fragment you want to display
-//
-//                fragmentTransaction.replace(R.id.content_fragment, mFragment);  // content_fragment is id of FrameLayout(XML file) where fragment will be displayed
-//
-//                fragmentTransaction.addToBackStack(frag_no); //add fragment to stack
-//                fragmentTransaction.hide(currentFragment).commit();  // hide current fragment
-//            }
-//        });
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -283,6 +271,12 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         });
     }
 
+
+    private void openDialog() {
+        AddCategoryDialog addCategoryDialog =  new AddCategoryDialog();
+        addCategoryDialog.show(getSupportFragmentManager(),"category dialog");
+    }
+
     public void checkButton(View v) {
         int radioId = radioGroup.getCheckedRadioButtonId();
         radioButton = findViewById(radioId);
@@ -293,6 +287,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         String description = editTextDescription.getText().toString();
         String date = datetextView.getText().toString();
         String time = timetextView.getText().toString();
+        String category = categoriesSpinner.getSelectedItem().toString();
 
 
         if (title.trim().isEmpty()) {
@@ -309,6 +304,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         data.putExtra(EXTRA_DATE, date);
         data.putExtra(EXTRA_TIME, time);
         data.putExtra(EXTRA_STATUS, taskStatus);
+        data.putExtra(EXTRA_CATEGORY, category);
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {
@@ -382,9 +378,9 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     }
 
     private void createSpinners(ArrayList<String> listToUse) {
-        ArrayAdapter<String> adp1 = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, listToUse);
-        categories.setAdapter(adp1);
-
+        ArrayAdapter<String> adp1 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listToUse);
+        categoriesSpinner.setAdapter(null);
+        categoriesSpinner.setAdapter(adp1);
     }
 
     private void startAlarm(@NonNull Calendar c) {
@@ -409,6 +405,10 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     }
 
 
-
-
+    @Override
+    public void applyName(String name) {
+        Toast.makeText(this, "" + name , Toast.LENGTH_SHORT).show();
+        Category category = new Category(name);
+        taskViewModel.insertCategory(category);
+    }
 }

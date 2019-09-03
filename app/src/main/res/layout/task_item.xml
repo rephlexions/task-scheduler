@@ -39,6 +39,7 @@
             android:layout_toEndOf="@+id/checkBox">
 
             <ImageView
+                android:visibility="invisible"
                 android:id="@+id/description_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

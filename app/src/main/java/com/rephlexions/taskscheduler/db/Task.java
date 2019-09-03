@@ -1,6 +1,8 @@
 package com.rephlexions.taskscheduler.db;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "task_table")
@@ -13,13 +15,15 @@ public class Task {
     private String priority;
     private String status;
     private long dueDate;
+    private String category;
 
-    public Task(String title, String description, String priority, String status, long dueDate) {
+    public Task( String title, String description, String priority, String status, long dueDate, String category) {
         this.title = title;
         this.description = description;
         this.priority = priority;
         this.status = status;
         this.dueDate = dueDate;
+        this.category = category;
     }
 /*
     // Constructor for a task without a deadline
@@ -59,6 +63,14 @@ public class Task {
     // counted in milliseconds
     public long getDueDate() {
         return dueDate;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public void setTitle(String title) {

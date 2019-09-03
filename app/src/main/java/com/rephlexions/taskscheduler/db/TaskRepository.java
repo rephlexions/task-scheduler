@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
@@ -25,7 +26,6 @@ public class TaskRepository {
         allTasks = taskDao.getAllTasks();
         allDueDates = taskDao.getAllDueDates();
         allCategories = categoryDao.getAllCategories();
-        //allCategoriesList = categoryDao.getAllCategoriesList();
     }
 
     // The API that the repository exposes to the ViewModel

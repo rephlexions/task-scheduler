@@ -89,8 +89,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final ArrayList<Category> arrayOfUsers = new ArrayList<Category>();
-
 
         // Delete on swipe
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
@@ -120,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(AddEditTaskActivity.EXTRA_TITLE, task.getTitle());
                 intent.putExtra(AddEditTaskActivity.EXTRA_DESCRIPTION, task.getDescription());
                 intent.putExtra(AddEditTaskActivity.EXTRA_PRIORITY, task.getPriority());
+                //TODO: putExtra task category
                 Log.d(TAG, "onItemClick: " + task.getDueDate());
                 intent.putExtra(AddEditTaskActivity.EXTRA_MILLI, task.getDueDate());
                 startActivityForResult(intent, EDIT_TASK_REQUEST);
@@ -157,17 +156,21 @@ public class MainActivity extends AppCompatActivity {
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
             String status = data.getStringExtra(AddEditTaskActivity.EXTRA_STATUS);
+            String category = data.getStringExtra(AddEditTaskActivity.EXTRA_CATEGORY);
+            Toast.makeText(this, "" + category, Toast.LENGTH_SHORT).show();
+
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
             long timeMillis = parseDate(date, time);
             Toast.makeText(this, "" + timeMillis, Toast.LENGTH_SHORT).show();
 
             //Create and insert task into the database
-            Task task = new Task(title, description, priority, status, timeMillis);
+            Task task = new Task(title, description, priority, status, timeMillis, category);
             taskViewModel.insert(task);
             Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
 
             //TODO: check IF duedate is empty -> create Task without a due date.
+
 
 //            Intent alertIntent = new Intent(this, AlertReceiver.class);
 //            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -196,11 +199,13 @@ public class MainActivity extends AppCompatActivity {
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
             String status = data.getStringExtra(AddEditTaskActivity.EXTRA_STATUS);
+            String category = data.getStringExtra(AddEditTaskActivity.EXTRA_CATEGORY);
+
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
             long timeMillis = parseDate(date, time);
 
-            Task task = new Task(title, description, priority, status, timeMillis);
+            Task task = new Task(title, description, priority, status, timeMillis, category);
             task.setId(id);
             taskViewModel.update(task);
 

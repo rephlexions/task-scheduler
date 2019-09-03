@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.rephlexions.taskscheduler.db.Task;
+
+import org.w3c.dom.Text;
 
 
 public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
@@ -53,6 +56,10 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         Task currentTask = getItem(position);
         holder.textViewTitle.setText(currentTask.getTitle());
         holder.textViewPriority.setText(currentTask.getPriority());
+        if(currentTask.getDescription().isEmpty()){
+            holder.descriptionIcon.setVisibility(View.INVISIBLE);
+        }
+        else {holder.descriptionIcon.setVisibility(View.VISIBLE);}
         if(currentTask.getPriority().equals("Low")){
             holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
         }
@@ -75,12 +82,14 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         private TextView textViewTitle;
         private TextView textViewPriority;
         private CheckBox checkBox;
+        private ImageView descriptionIcon;
 
         public TaskHolder(@NonNull View itemView) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.text_view_title);
             textViewPriority = itemView.findViewById(R.id.text_view_priority);
             checkBox = itemView.findViewById(R.id.checkBox);
+            descriptionIcon = itemView.findViewById(R.id.description_icon);
             boolean checked = checkBox.isChecked();
 
             //Set listener on card view items
