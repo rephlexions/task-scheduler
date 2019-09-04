@@ -27,6 +27,9 @@
             android:parentActivityName="com.rephlexions.taskscheduler.MainActivity">
         </activity>
         <receiver android:name=".reminders.AlertReceiver" />
+        <receiver android:name=".utils.ActionReceiver">
+        </receiver>
+
     </application>
 
 </manifest>

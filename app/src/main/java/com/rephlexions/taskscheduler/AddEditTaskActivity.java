@@ -73,8 +73,19 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             "com.example.taskscheduler.EXTRA_CATEGORY";
     public static final String EXTRA_CATEGORIESLIST =
             "com.example.taskscheduler.EXTRA_CATEGORIESLIST";
+    public static final String ACTION_ONGOING =
+            "com.example.taskscheduler.ACTION_ONGOING";
 
+
+    public static final String EXTRA_ALERTTITLE = "com.example.taskscheduler.EXTRA_ALERTTITLE";
+    public static final String EXTRA_ALERTDESCRIPTION = "com.example.taskscheduler.EXTRA_ALERTDESCRIPTION";
+    public static final String EXTRA_ALERTID = "com.example.taskscheduler.EXTRA_ALERTID";
+    public static final String EXTRA_ALERTPRIORITY = "com.example.taskscheduler.EXTRA_ALERTPRIORITY";
+    public static final String EXTRA_ALERTMILLI = "com.example.taskscheduler.EXTRA_ALERTMILLI";
+    public static final String EXTRA_ALERTSTATUS = "cm.example.taskscheduler.EXTRA_ALERTSTATUS";
+    public static final String EXTRA_ALERTCATEGORY = "com.example.taskscheduler.EXTRA_ALERTCATEGORY";
     private static final String TAG = "";
+
 
     private EditText editTextTitle;
     private EditText editTextDescription;
@@ -92,6 +103,12 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     private Spinner categoriesSpinner;
     private TaskViewModel taskViewModel;
     private TextView categoryTextView;
+    private RadioButton nonePriority;
+    private RadioButton lowPriority;
+    private RadioButton mediumPriority;
+    private RadioButton highPriority;
+
+    long dateTimeLong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,17 +122,13 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         datetextView = (TextView) findViewById(R.id.text_view_date);
         timetextView = (TextView) findViewById(R.id.text_view_time);
         categoryTextView = (TextView) findViewById(R.id.text_view_category);
-
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
-        final RadioButton nonePriority = (RadioButton) findViewById(R.id.radio_priority_none);
-        final RadioButton lowPriority = (RadioButton) findViewById(R.id.radio_priority_low);
-        final RadioButton mediumPriority = (RadioButton) findViewById(R.id.radio_priority_medium);
-        final RadioButton highPriority = (RadioButton) findViewById(R.id.radio_priority_high);
-
+        nonePriority = (RadioButton) findViewById(R.id.radio_priority_none);
+        lowPriority = (RadioButton) findViewById(R.id.radio_priority_low);
+        mediumPriority = (RadioButton) findViewById(R.id.radio_priority_medium);
+        highPriority = (RadioButton) findViewById(R.id.radio_priority_high);
         switchButton = (Switch) findViewById(R.id.priority_switch);
         checkBox = (CheckBox) findViewById(R.id.task_checkBox);
-
-
         categoriesSpinner = findViewById(R.id.categories_spinner);
 
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
@@ -141,7 +154,6 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 if (selectedItem.equals("Add category")) {
                     openDialog();
-                    Toast.makeText(AddEditTaskActivity.this, "" + categoriesSpinner.getCount(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -227,11 +239,17 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             setTitle("Edit Task");
             editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
-            long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1L);
+            taskStatus = intent.getStringExtra(EXTRA_STATUS);
+            categoriesSpinner.setSelection(intent.getIntExtra(EXTRA_CATEGORY,1));
+            dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1L);
+
             String[] dateTime = getDate(dateTimeLong, "MM/dd/yy HH:mm");
             datetextView.setText(dateTime[0]);
             timetextView.setText(dateTime[1]);
-            taskStatus = intent.getStringExtra(EXTRA_STATUS);
+
+            if(taskStatus.equals("ongoing")){
+                switchButton.setChecked(true);
+            }
 
             if (intent.getStringExtra(EXTRA_PRIORITY).equals("None")) {
                 nonePriority.setChecked(true);
@@ -276,6 +294,11 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         radioButton = findViewById(radioId);
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
     private void saveTask() {
         String title = editTextTitle.getText().toString();
         String description = editTextDescription.getText().toString();
@@ -286,7 +309,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         categoriesList.remove(categoriesList.size() -1);
 
         if (title.trim().isEmpty()) {
-            Toast.makeText(this, "Please insert a Title and a Description", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please insert a Title", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -307,8 +330,14 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             data.putExtra(EXTRA_ID, id);
         }
 
-        //FIXME: Temporary alarm test.
         Intent alertIntent = new Intent(this, AlertReceiver.class);
+        alertIntent.putExtra(EXTRA_ALERTID, id);
+        alertIntent.putExtra(EXTRA_ALERTTITLE, title);
+        alertIntent.putExtra(EXTRA_ALERTDESCRIPTION, description);
+        alertIntent.putExtra(EXTRA_ALERTPRIORITY, radioChoice);
+        alertIntent.putExtra(EXTRA_ALERTMILLI, dateTimeLong);
+        alertIntent.putExtra(EXTRA_ALERTSTATUS, taskStatus);
+        alertIntent.putExtra(EXTRA_ALERTCATEGORY, category);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1,
                 alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -399,13 +428,13 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
     }
 
-
     @Override
     public void applyName(String name) {
         Toast.makeText(this, "" + name , Toast.LENGTH_SHORT).show();
         Category category = new Category(name);
         taskViewModel.insertCategory(category);
     }
+
     public ArrayList<String> retrieveAllItems(Spinner theSpinner) {
         Adapter adapter = theSpinner.getAdapter();
         int n = adapter.getCount();

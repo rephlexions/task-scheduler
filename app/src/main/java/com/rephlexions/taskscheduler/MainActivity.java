@@ -19,8 +19,10 @@ import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.Toolbar;
@@ -51,6 +53,14 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
 
+import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_CATEGORY;
+import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_DESCRIPTION;
+import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_ID;
+import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_MILLI;
+import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_PRIORITY;
+import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_STATUS;
+import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_TITLE;
+
 public class MainActivity extends AppCompatActivity {
     // Constants to distinguish between different requests
     public static final int ADD_TASK_REQUEST = 1;
@@ -69,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
     int hour, minute;
     ArrayList<String> categoriesList = new ArrayList<>();
     private Menu menu;
+
+    BroadcastReceiver broadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +118,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        registerReceiver(broadcastReceiver, new IntentFilter("ChangeTaskStatus"));
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(intent.getAction().equals("ChangeTaskStatus")){
+                    int id = intent.getIntExtra(EXTRA_ID,-1);
+                    String title = intent.getStringExtra(EXTRA_TITLE);
+                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
+                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
+                    String status = intent.getStringExtra(EXTRA_STATUS);
+                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI,1);
+                    String category = intent.getStringExtra(EXTRA_CATEGORY);
+                    Task task = new Task(title,description,priority,status,dateTimeLong,category);
+                    task.setId(id);
+                    taskViewModel.update(task);
+                }
+            }
+        };
+
         // Delete on swipe
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT) {
@@ -130,13 +161,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Task task) {
                 Intent intent = new Intent(MainActivity.this, AddEditTaskActivity.class);
-                intent.putExtra(AddEditTaskActivity.EXTRA_ID, task.getId());
-                intent.putExtra(AddEditTaskActivity.EXTRA_TITLE, task.getTitle());
-                intent.putExtra(AddEditTaskActivity.EXTRA_DESCRIPTION, task.getDescription());
-                intent.putExtra(AddEditTaskActivity.EXTRA_PRIORITY, task.getPriority());
+                intent.putExtra(EXTRA_ID, task.getId());
+                intent.putExtra(EXTRA_TITLE, task.getTitle());
+                intent.putExtra(EXTRA_DESCRIPTION, task.getDescription());
+                intent.putExtra(EXTRA_PRIORITY, task.getPriority());
+                intent.putExtra(EXTRA_STATUS, task.getStatus());
                 //TODO: putExtra task category
                 Log.d(TAG, "onItemClick: " + task.getDueDate());
-                intent.putExtra(AddEditTaskActivity.EXTRA_MILLI, task.getDueDate());
+                intent.putExtra(EXTRA_MILLI, task.getDueDate());
                 startActivityForResult(intent, EDIT_TASK_REQUEST);
             }
         });
@@ -193,18 +225,16 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ADD_TASK_REQUEST && resultCode == RESULT_OK) {
-            String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
-            String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
-            String status = data.getStringExtra(AddEditTaskActivity.EXTRA_STATUS);
-            String category = data.getStringExtra(AddEditTaskActivity.EXTRA_CATEGORY);
+            String title = data.getStringExtra(EXTRA_TITLE);
+            String description = data.getStringExtra(EXTRA_DESCRIPTION);
+            String priority = data.getStringExtra(EXTRA_PRIORITY);
+            String status = data.getStringExtra(EXTRA_STATUS);
+            String category = data.getStringExtra(EXTRA_CATEGORY);
             categoriesList = data.getStringArrayListExtra(AddEditTaskActivity.EXTRA_CATEGORIESLIST);
-            Log.d(TAG, "onActivityResult: " + categoriesList);
 
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
             long timeMillis = parseDate(date, time);
-            Toast.makeText(this, "" + timeMillis, Toast.LENGTH_SHORT).show();
 
             //Create and insert task into the database
             Task task = new Task(title, description, priority, status, timeMillis, category);
@@ -229,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
 //            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeMilis, pendingIntent);
 
         } else if (requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK) {
-            int id = data.getIntExtra(AddEditTaskActivity.EXTRA_ID, -1);
+            int id = data.getIntExtra(EXTRA_ID, -1);
 
             //Don't update id ID is not valid
             if (id == -1) {
@@ -237,11 +267,11 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
-            String priority = data.getStringExtra(AddEditTaskActivity.EXTRA_PRIORITY);
-            String status = data.getStringExtra(AddEditTaskActivity.EXTRA_STATUS);
-            String category = data.getStringExtra(AddEditTaskActivity.EXTRA_CATEGORY);
+            String title = data.getStringExtra(EXTRA_TITLE);
+            String description = data.getStringExtra(EXTRA_DESCRIPTION);
+            String priority = data.getStringExtra(EXTRA_PRIORITY);
+            String status = data.getStringExtra(EXTRA_STATUS);
+            String category = data.getStringExtra(EXTRA_CATEGORY);
             ArrayList<String> categoriesList = data.getStringArrayListExtra(AddEditTaskActivity.EXTRA_CATEGORIESLIST);
 
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
