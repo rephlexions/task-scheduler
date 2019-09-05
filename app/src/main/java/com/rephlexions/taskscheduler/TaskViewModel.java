@@ -1,6 +1,7 @@
 package com.rephlexions.taskscheduler;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,6 +11,9 @@ import com.rephlexions.taskscheduler.db.Task;
 import com.rephlexions.taskscheduler.db.TaskRepository;
 
 import java.util.List;
+import java.util.logging.Logger;
+
+import static android.content.ContentValues.TAG;
 
 public class TaskViewModel extends AndroidViewModel {
     private TaskRepository repository;
@@ -26,9 +30,15 @@ public class TaskViewModel extends AndroidViewModel {
     LiveData<List<Task>> getAllTasksByCategory(String category){
         return repository.getAllTasksByCategory(category);
     }
+    LiveData<List<Task>> getTaskID(String title){return repository.getTaskID(title);}
 
     public void insert(Task task) {
-        repository.insert(task);
+        repository.insert(task, new TaskRepository.InsertTaskAsyncTask.InsertResult() {
+            @Override
+            public void onResult(long result) {
+                Log.d(TAG, "onResult: " + result);
+            }
+        });
     }
 
     public void update(Task task) {

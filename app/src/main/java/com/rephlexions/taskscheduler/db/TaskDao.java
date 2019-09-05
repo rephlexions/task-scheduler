@@ -16,7 +16,7 @@ public interface TaskDao {
     // Just annotate and ROOM will generate the necessary code.
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Task task);
+    long insert(Task task);
 
     @Update
     void update(Task task);
@@ -36,5 +36,8 @@ public interface TaskDao {
 
     @Query("SELECT * FROM TASK_TABLE WHERE category = :category")
     LiveData<List<Task>> getAllTasksByCategory(String category);
+
+    @Query("SELECT * FROM TASK_TABLE WHERE title = :title")
+    LiveData<List<Task>> getTaskID(String title);
 
 }

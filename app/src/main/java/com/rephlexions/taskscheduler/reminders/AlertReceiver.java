@@ -34,7 +34,8 @@ public class AlertReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        int id = intent.getIntExtra(EXTRA_ALERTID, -1);
+
+        long id = intent.getLongExtra(EXTRA_ALERTID, -1);
         String title = intent.getStringExtra(EXTRA_ALERTTITLE);
         String description = intent.getStringExtra(EXTRA_ALERTDESCRIPTION);
         String radioChoice = intent.getStringExtra(EXTRA_ALERTPRIORITY);
@@ -42,12 +43,11 @@ public class AlertReceiver extends BroadcastReceiver {
         String taskStatus = intent.getStringExtra(EXTRA_ALERTSTATUS);
         String category = intent.getStringExtra(EXTRA_ALERTCATEGORY);
 
-
         createNotification(context, title, description, "alert", id, radioChoice, dateTimeLong, taskStatus, category);
     }
 
     public void createNotification(Context context, String title, String contentText,
-                                   String msgAlert, int id, String radioChoice, long dateTimeLong,
+                                   String msgAlert, long id, String radioChoice, long dateTimeLong,
                                    String taskStatus, String category) {
 
         Intent intent = new Intent(context, AddEditTaskActivity.class);
@@ -69,6 +69,7 @@ public class AlertReceiver extends BroadcastReceiver {
         actionIntent.putExtra(EXTRA_STATUS, taskStatus);
         actionIntent.putExtra(EXTRA_CATEGORY, category);
         actionIntent.putExtra("action","ongoing");
+
         PendingIntent actionPendingIntent = PendingIntent.getBroadcast(context,1,actionIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
         PendingIntent notificationIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -77,14 +78,13 @@ public class AlertReceiver extends BroadcastReceiver {
                 .setContentTitle(title)
                 .setTicker(msgAlert)
                 .setContentText(contentText)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .addAction(R.drawable.ic_close, "ongoing",actionPendingIntent)
-                .setOngoing(true);
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .addAction(R.drawable.ic_close, "ongoing",actionPendingIntent);
         nb.setContentIntent(notificationIntent);
         nb.setDefaults(NotificationCompat.DEFAULT_SOUND);
         nb.setAutoCancel(true);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(TAG, id, nb.build());
+        notificationManager.notify(TAG, 1, nb.build());
     }
 }
 

@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 public class Task {
     //Class that represents one task object and the database table
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
     private String title;
     private String description;
     private String priority;
@@ -34,11 +34,11 @@ public class Task {
 
  */
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

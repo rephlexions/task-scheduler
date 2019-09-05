@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModelProviders;
 import com.rephlexions.taskscheduler.MainActivity;
 import com.rephlexions.taskscheduler.TaskViewModel;
 import com.rephlexions.taskscheduler.db.Task;
+import com.rephlexions.taskscheduler.db.TaskDao;
+import com.rephlexions.taskscheduler.db.TaskRepository;
 
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_CATEGORY;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_DESCRIPTION;
@@ -23,7 +25,7 @@ public class ActionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        int id = intent.getIntExtra(EXTRA_ID, -1);
+        long id = intent.getLongExtra(EXTRA_ID, -1);
         String title = intent.getStringExtra(EXTRA_TITLE);
         String description = intent.getStringExtra(EXTRA_DESCRIPTION);
         String priority = intent.getStringExtra(EXTRA_PRIORITY);
@@ -34,6 +36,7 @@ public class ActionReceiver extends BroadcastReceiver {
         String action=intent.getStringExtra("action");
         if(action.equals("ongoing")){
             Intent intentStatus = new Intent("ChangeTaskStatus");
+            intentStatus.putExtra(EXTRA_ID, id);
             intentStatus.putExtra(EXTRA_TITLE, title);
             intentStatus.putExtra(EXTRA_DESCRIPTION, description);
             intentStatus.putExtra(EXTRA_PRIORITY, priority);

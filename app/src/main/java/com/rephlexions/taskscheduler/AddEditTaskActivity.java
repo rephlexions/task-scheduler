@@ -37,11 +37,13 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.rephlexions.taskscheduler.db.Category;
+import com.rephlexions.taskscheduler.db.Task;
 import com.rephlexions.taskscheduler.fragments.AddCategoryDialog;
 import com.rephlexions.taskscheduler.fragments.DatePickerFragment;
 import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
 import com.rephlexions.taskscheduler.reminders.AlertReceiver;
 import com.rephlexions.taskscheduler.utils.CategoryListAdapter;
+import com.rephlexions.taskscheduler.utils.TaskListAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -240,6 +242,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
             taskStatus = intent.getStringExtra(EXTRA_STATUS);
+            Toast.makeText(this, "" + taskStatus, Toast.LENGTH_SHORT).show();
             categoriesSpinner.setSelection(intent.getIntExtra(EXTRA_CATEGORY,1));
             dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1L);
 
@@ -330,18 +333,18 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             data.putExtra(EXTRA_ID, id);
         }
 
-        Intent alertIntent = new Intent(this, AlertReceiver.class);
-        alertIntent.putExtra(EXTRA_ALERTID, id);
-        alertIntent.putExtra(EXTRA_ALERTTITLE, title);
-        alertIntent.putExtra(EXTRA_ALERTDESCRIPTION, description);
-        alertIntent.putExtra(EXTRA_ALERTPRIORITY, radioChoice);
-        alertIntent.putExtra(EXTRA_ALERTMILLI, dateTimeLong);
-        alertIntent.putExtra(EXTRA_ALERTSTATUS, taskStatus);
-        alertIntent.putExtra(EXTRA_ALERTCATEGORY, category);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1,
-                alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
+//        Intent alertIntent = new Intent(this, AlertReceiver.class);
+//        alertIntent.putExtra(EXTRA_ALERTID, id);
+//        alertIntent.putExtra(EXTRA_ALERTTITLE, title);
+//        alertIntent.putExtra(EXTRA_ALERTDESCRIPTION, description);
+//        alertIntent.putExtra(EXTRA_ALERTPRIORITY, radioChoice);
+//        alertIntent.putExtra(EXTRA_ALERTMILLI, dateTimeLong);
+//        alertIntent.putExtra(EXTRA_ALERTSTATUS, taskStatus);
+//        alertIntent.putExtra(EXTRA_ALERTCATEGORY, category);
+//        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1,
+//                alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
 
 
         setResult(RESULT_OK, data);

@@ -6,6 +6,9 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.logging.Logger;
+
+import static java.util.logging.Logger.getLogger;
 
 public class TaskRepository {
     private TaskDao taskDao;
@@ -34,8 +37,10 @@ public class TaskRepository {
     }
 
     // The API that the repository exposes to the ViewModel
-    public void insert(Task task) {
-        new InsertTaskAsyncTask(taskDao).execute(task);
+    public LiveData<List<Task>> getTaskID(String title){return taskDao.getTaskID(title);}
+
+    public void insert(Task task, InsertTaskAsyncTask.InsertResult insertResult) {
+        new InsertTaskAsyncTask(taskDao, insertResult).execute(task);
     }
 
     public void update(Task task) {
@@ -58,20 +63,32 @@ public class TaskRepository {
         return allDueDates;
     }
 
-    //Room doesnt allow database operations on the main thread (app crash). Use async tasks
-    private static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Void> {
-        private TaskDao taskDao;
 
-        private InsertTaskAsyncTask(TaskDao taskDao) {
+    //Room doesnt allow database operations on the main thread (app crash). Use async tasks
+    public static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Long> {
+        private final TaskDao taskDao;
+        private final InsertResult insertResult;
+
+        private InsertTaskAsyncTask(TaskDao taskDao, InsertResult insertResult) {
             this.taskDao = taskDao;
+            this.insertResult = insertResult;
         }
 
         @Override
-        protected Void doInBackground(Task... tasks) {
-            taskDao.insert(tasks[0]);
-            return null;
+        protected Long doInBackground(Task... tasks) {
+            return taskDao.insert(tasks[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Long taskId) {
+            insertResult.onResult(taskId);
+        }
+
+        public interface InsertResult {
+            void onResult(long result);
         }
     }
+
 
     private static class UpdateTaskAsyncTask extends AsyncTask<Task, Void, Void> {
         private TaskDao taskDao;
