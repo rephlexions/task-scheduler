@@ -123,7 +123,6 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         deleteButton = (ImageButton) findViewById(R.id.delete_datetime_button);
         datetextView = (TextView) findViewById(R.id.text_view_date);
         timetextView = (TextView) findViewById(R.id.text_view_time);
-        categoryTextView = (TextView) findViewById(R.id.text_view_category);
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
         nonePriority = (RadioButton) findViewById(R.id.radio_priority_none);
         lowPriority = (RadioButton) findViewById(R.id.radio_priority_low);
@@ -180,6 +179,13 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
                 }
             }
         });
+        // Handle default priority radio button
+        int radioButtonID = radioGroup.getCheckedRadioButtonId();
+        View defaultRadioButton = radioGroup.findViewById(radioButtonID);
+        int idx = radioGroup.indexOfChild(defaultRadioButton);
+        if(idx == 1){
+            radioChoice = "Low";
+        }
 
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -243,14 +249,17 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
             taskStatus = intent.getStringExtra(EXTRA_STATUS);
             Toast.makeText(this, "" + taskStatus, Toast.LENGTH_SHORT).show();
-            categoriesSpinner.setSelection(intent.getIntExtra(EXTRA_CATEGORY,1));
-            dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1L);
-
-            String[] dateTime = getDate(dateTimeLong, "MM/dd/yy HH:mm");
-            datetextView.setText(dateTime[0]);
-            timetextView.setText(dateTime[1]);
-
-            if(taskStatus.equals("ongoing")){
+            categoriesSpinner.setSelection(intent.getIntExtra(EXTRA_CATEGORY, 1));
+            dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 0L);
+            if (dateTimeLong == 0L) {
+                datetextView.setText("No date");
+                timetextView.setText("No time");
+            } else {
+                String[] dateTime = getDate(dateTimeLong, "MM/dd/yy HH:mm");
+                datetextView.setText(dateTime[0]);
+                timetextView.setText(dateTime[1]);
+            }
+            if (taskStatus.equals("ongoing")) {
                 switchButton.setChecked(true);
             }
 
@@ -288,8 +297,8 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
 
     private void openDialog() {
-        AddCategoryDialog addCategoryDialog =  new AddCategoryDialog();
-        addCategoryDialog.show(getSupportFragmentManager(),"category dialog");
+        AddCategoryDialog addCategoryDialog = new AddCategoryDialog();
+        addCategoryDialog.show(getSupportFragmentManager(), "category dialog");
     }
 
     public void checkButton(View v) {
@@ -309,7 +318,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         String time = timetextView.getText().toString();
         String category = categoriesSpinner.getSelectedItem().toString();
         ArrayList<String> categoriesList = retrieveAllItems(categoriesSpinner);
-        categoriesList.remove(categoriesList.size() -1);
+        categoriesList.remove(categoriesList.size() - 1);
 
         if (title.trim().isEmpty()) {
             Toast.makeText(this, "Please insert a Title", Toast.LENGTH_SHORT).show();
@@ -332,21 +341,6 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         if (id != -1) {
             data.putExtra(EXTRA_ID, id);
         }
-
-//        Intent alertIntent = new Intent(this, AlertReceiver.class);
-//        alertIntent.putExtra(EXTRA_ALERTID, id);
-//        alertIntent.putExtra(EXTRA_ALERTTITLE, title);
-//        alertIntent.putExtra(EXTRA_ALERTDESCRIPTION, description);
-//        alertIntent.putExtra(EXTRA_ALERTPRIORITY, radioChoice);
-//        alertIntent.putExtra(EXTRA_ALERTMILLI, dateTimeLong);
-//        alertIntent.putExtra(EXTRA_ALERTSTATUS, taskStatus);
-//        alertIntent.putExtra(EXTRA_ALERTCATEGORY, category);
-//        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1,
-//                alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
-
-
         setResult(RESULT_OK, data);
         // Close activity
         finish();
@@ -412,7 +406,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
     @Override
     public void applyName(String name) {
-        Toast.makeText(this, "" + name , Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "" + name, Toast.LENGTH_SHORT).show();
         Category category = new Category(name);
         taskViewModel.insertCategory(category);
     }
@@ -422,7 +416,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         int n = adapter.getCount();
         final ArrayList<String> categoryNames = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            String user =  (String) adapter.getItem(i);
+            String user = (String) adapter.getItem(i);
             categoryNames.add(user);
         }
         return categoryNames;

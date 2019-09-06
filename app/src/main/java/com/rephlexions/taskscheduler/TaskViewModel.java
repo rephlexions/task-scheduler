@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+
 import com.rephlexions.taskscheduler.db.Category;
 import com.rephlexions.taskscheduler.db.Task;
 import com.rephlexions.taskscheduler.db.TaskRepository;
@@ -27,10 +28,25 @@ public class TaskViewModel extends AndroidViewModel {
         allCategories = repository.getAllCategories();
     }
 
-    LiveData<List<Task>> getAllTasksByCategory(String category){
+    LiveData<List<Task>> getAllTasksByCategory(String category) {
         return repository.getAllTasksByCategory(category);
     }
-    LiveData<List<Task>> getTaskID(String title){return repository.getTaskID(title);}
+
+    LiveData<List<Task>> getAllTasksByPriority(String priority) {
+        return repository.getAllTasksByPriority(priority);
+    }
+
+    public LiveData<List<Task>> getAllTasksByDateASC(){
+        return repository.getAllTasksByDateASC();
+    }
+
+    public LiveData<List<Task>> getAllTasksByDateDESC(){
+        return repository.getAllTasksByDateDESC();
+    }
+
+    LiveData<List<Task>> getTaskID(String title) {
+        return repository.getTaskID(title);
+    }
 
     public void insert(Task task) {
         repository.insert(task, new TaskRepository.InsertTaskAsyncTask.InsertResult() {
@@ -69,6 +85,8 @@ public class TaskViewModel extends AndroidViewModel {
         repository.deleteCategory(category);
     }
 
-    public LiveData<List<Category>> getAllCategories(){return allCategories;}
+    public LiveData<List<Category>> getAllCategories() {
+        return allCategories;
+    }
 
 }

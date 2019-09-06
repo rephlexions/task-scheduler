@@ -143,6 +143,7 @@
                 android:layout_marginBottom="8dp"
                 android:buttonTint="#4CAF50"
                 android:onClick="checkButton"
+                android:checked="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/radio_priority_none"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -203,8 +204,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/text_view_category"
+        <Spinner
+            android:id="@+id/categories_spinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -305,13 +306,4 @@
         </Switch>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/categories_spinner">
-
-    </Spinner>
-
-
 </LinearLayout>

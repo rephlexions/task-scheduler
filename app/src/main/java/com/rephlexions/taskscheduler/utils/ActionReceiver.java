@@ -1,5 +1,6 @@
 package com.rephlexions.taskscheduler.utils;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,9 @@ public class ActionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        NotificationManager notificationManager = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+
         long id = intent.getLongExtra(EXTRA_ID, -1);
         String title = intent.getStringExtra(EXTRA_TITLE);
         String description = intent.getStringExtra(EXTRA_DESCRIPTION);
@@ -39,7 +43,6 @@ public class ActionReceiver extends BroadcastReceiver {
         String category = intent.getStringExtra(EXTRA_CATEGORY);
 
         String action=intent.getStringExtra("action");
-//        String action2=intent.getStringExtra("action2");
         if(action.equals("ongoing")){
             Intent intentStatus = new Intent("ChangeTaskStatus");
             intentStatus.putExtra(EXTRA_ID, id);
@@ -50,22 +53,15 @@ public class ActionReceiver extends BroadcastReceiver {
             intentStatus.putExtra(EXTRA_STATUS, "ongoing");
             intentStatus.putExtra(EXTRA_CATEGORY, category);
             context.sendBroadcast(intentStatus);
-            Log.d(TAG, "onReceive: first action");
+            Log.d(TAG, "onReceive: " + (int) id);
+            notificationManager.cancel((int) id);
         }
         else if(action.equals("postpone")){
             Log.d(TAG, "onReceive: second action");
         }
-        //This is used to close the notification tray
-        Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        context.sendBroadcast(it);
     }
 
     public void performAction1(){
 
     }
-
-    public void performAction2(){
-
-    }
-
 }

@@ -37,6 +37,15 @@ public interface TaskDao {
     @Query("SELECT * FROM TASK_TABLE WHERE category = :category")
     LiveData<List<Task>> getAllTasksByCategory(String category);
 
+    @Query("SELECT * FROM TASK_TABLE WHERE priority = :priority")
+    LiveData<List<Task>> getAllTasksByPriority(String priority);
+
+    @Query("SELECT * FROM TASK_TABLE ORDER BY dueDate ASC")
+    LiveData<List<Task>> getAllTasksByDateASC();
+
+    @Query("SELECT * FROM TASK_TABLE ORDER BY dueDate DESC")
+    LiveData<List<Task>> getAllTasksByDateDESC();
+
     @Query("SELECT * FROM TASK_TABLE WHERE title = :title")
     LiveData<List<Task>> getTaskID(String title);
 

@@ -35,6 +35,17 @@ public class TaskRepository {
     public LiveData<List<Task>> getAllTasksByCategory(String category){
         return taskDao.getAllTasksByCategory(category);
     }
+    public LiveData<List<Task>> getAllTasksByPriority(String priority){
+        return taskDao.getAllTasksByPriority(priority);
+    }
+
+    public LiveData<List<Task>> getAllTasksByDateASC(){
+        return taskDao.getAllTasksByDateASC();
+    }
+
+    public LiveData<List<Task>> getAllTasksByDateDESC(){
+        return taskDao.getAllTasksByDateDESC();
+    }
 
     // The API that the repository exposes to the ViewModel
     public LiveData<List<Task>> getTaskID(String title){return taskDao.getTaskID(title);}

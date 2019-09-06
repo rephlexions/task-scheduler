@@ -2,6 +2,8 @@ package com.rephlexions.taskscheduler;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import com.rephlexions.taskscheduler.db.Task;
 
 import org.w3c.dom.Text;
 
+import static android.content.ContentValues.TAG;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.getDate;
 
 
@@ -57,25 +60,34 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
     public void onBindViewHolder(@NonNull TaskHolder holder, int position) {
         Task currentTask = getItem(position);
         holder.textViewTitle.setText(currentTask.getTitle());
+        holder.textViewCategory.setText(currentTask.getCategory());
 
-        String[] dateTime = getDate(currentTask.getDueDate(), "MM/dd/yy HH:mm");
-        holder.textViewDate.setText(dateTime[0]);
-        holder.textViewTime.setText(dateTime[1]);
-
-        if(currentTask.getDescription().isEmpty()){
-            holder.descriptionIcon.setVisibility(View.INVISIBLE);
+        if (currentTask.getDueDate() == 0L) {
+            holder.textViewDate.setVisibility(View.INVISIBLE);
+            holder.textViewTime.setText("No alarm set");
+            holder.textViewTime.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        } else {
+            String[] dateTime = getDate(currentTask.getDueDate(), "MM/dd/yy HH:mm");
+            holder.textViewDate.setVisibility(View.VISIBLE);
+            holder.textViewTime.setVisibility(View.VISIBLE);
+            holder.textViewTime.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_alarm_on_black, 0, 0, 0);
+            holder.textViewDate.setText(dateTime[0]);
+            holder.textViewTime.setText(dateTime[1]);
         }
-        else {holder.descriptionIcon.setVisibility(View.VISIBLE);}
-        if(currentTask.getPriority().equals("Low")){
+
+        if (currentTask.getStatus().equals("completed")) {
+            holder.textViewTitle.setPaintFlags(holder.textViewTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else if (currentTask.getStatus().equals("pending")) {
+            holder.textViewTitle.setPaintFlags(0);
+        }
+
+        if (currentTask.getPriority().equals("Low")) {
             holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
-        }
-        else if(currentTask.getPriority().equals("Medium")){
+        } else if (currentTask.getPriority().equals("Medium")) {
             holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#FFC107")));
-        }
-        else if(currentTask.getPriority().equals("High")){
+        } else if (currentTask.getPriority().equals("High")) {
             holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#E91E63")));
-        }
-        else if (currentTask.getPriority() == null || currentTask.getPriority().equals("None")){
+        } else if (currentTask.getPriority() == null || currentTask.getPriority().equals("None")) {
             holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#808080")));
         }
     }
@@ -86,21 +98,18 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
 
     class TaskHolder extends RecyclerView.ViewHolder {
         private TextView textViewTitle;
-        private TextView textViewPriority;
         private CheckBox checkBox;
-        private ImageView descriptionIcon;
         private TextView textViewDate;
         private TextView textViewTime;
+        private TextView textViewCategory;
 
-        public TaskHolder(@NonNull View itemView) {
+        public TaskHolder(@NonNull final View itemView) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.text_view_title);
-            //textViewPriority = itemView.findViewById(R.id.text_view_priority);
-            checkBox = itemView.findViewById(R.id.checkBox);
-            descriptionIcon = itemView.findViewById(R.id.description_icon);
+            checkBox = itemView.findViewById(R.id.item_checkBox);
             textViewDate = itemView.findViewById(R.id.task_alarm_date);
             textViewTime = itemView.findViewById(R.id.task_alarm_time);
-            boolean checked = checkBox.isChecked();
+            textViewCategory = itemView.findViewById(R.id.task_category);
 
             //Set listener on card view items
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +119,20 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
                     int position = getAdapterPosition();
                     if (listener != null && position != RecyclerView.NO_POSITION) {
                         listener.onItemClick(getItem(position));
+                    }
+                }
+            });
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    Task currentTask = getItem(position);
+                    if (checkBox.isChecked()) {
+                        currentTask.setStatus("completed");
+                        textViewTitle.setPaintFlags(textViewTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    } else if (!checkBox.isChecked()) {
+                        currentTask.setStatus("pending");
+                        textViewTitle.setPaintFlags(0);
                     }
                 }
             });

@@ -20,4 +20,5 @@ public class CategoryListAdapter {
         if (mCategory != null)
             return mCategory.size();
         else return 0;
-    }}
+    }
+}

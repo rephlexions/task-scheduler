@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -105,7 +106,8 @@ public class AlertReceiver extends BroadcastReceiver {
         nb.setDefaults(NotificationCompat.DEFAULT_SOUND);
         nb.setAutoCancel(true);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(TAG, 1, nb.build());
+        Log.d(TAG, "createNotification: " + (int) id);
+        notificationManager.notify(TAG, (int) id, nb.build());
     }
 }
 

@@ -8,20 +8,67 @@
         />
 
     <item
-        android:id="@+id/item3"
+        android:id="@+id/filter"
         android:title="Filter by"
         app:showAsAction="never">
 
         <menu>
-
+            <item
+                android:id="@+id/filter_date_created"
+                android:title="Date created">
+            </item>
             <item
                 android:id="@+id/filter_dueDate"
-                android:title="Due date" />
-
+                android:title="Due date">
+                <menu>
+                    <group>
+                        <item
+                            android:id="@+id/filter_date_ascending"
+                            android:title="Ascending">
+                        </item>
+                        <item
+                            android:id="@+id/filter_date_descending"
+                            android:title="Descending">
+                        </item>
+                    </group>
+                </menu>
+            </item>
             <item
                 android:id="@+id/filter_category"
-                android:title="Category" >
+                android:title="Category">
                 <menu>
+
+                </menu>
+            </item>
+            <item
+                android:id="@+id/filter_priority"
+                android:title="Priority">
+                <menu>
+                    <group
+                        android:id="@+id/filter_group"
+                        android:checkableBehavior="single">
+                        <item
+                            android:id="@+id/filter_all_priority"
+                            android:title="All"
+                            android:checked="true">
+                        </item>
+                        <item
+                            android:id="@+id/filter_none_priority"
+                            android:title="None">
+                        </item>
+                        <item
+                            android:id="@+id/filter_low_priority"
+                            android:title="Low">
+                        </item>
+                        <item
+                            android:id="@+id/filter_medium_priority"
+                            android:title="Medium">
+                        </item>
+                        <item
+                            android:id="@+id/filter_high_priority"
+                            android:title="High">
+                        </item>
+                    </group>
 
                 </menu>
             </item>

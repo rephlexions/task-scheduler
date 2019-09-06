@@ -1,28 +1,26 @@
 package com.rephlexions.taskscheduler;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.rephlexions.taskscheduler.db.Category;
-import com.rephlexions.taskscheduler.db.Task;
-import com.rephlexions.taskscheduler.db.TaskRepository;
-import com.rephlexions.taskscheduler.reminders.AlertReceiver;
-import com.rephlexions.taskscheduler.utils.CategoryListAdapter;
-import com.rephlexions.taskscheduler.utils.TaskListAdapter;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-
-
 import android.app.AlarmManager;
-
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -32,14 +30,13 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.SubMenu;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.rephlexions.taskscheduler.db.Category;
+import com.rephlexions.taskscheduler.db.Task;
+import com.rephlexions.taskscheduler.db.TaskRepository;
+import com.rephlexions.taskscheduler.reminders.AlertReceiver;
+import com.rephlexions.taskscheduler.utils.CategoryListAdapter;
+import com.rephlexions.taskscheduler.utils.TaskListAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,7 +44,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static android.app.PendingIntent.getActivity;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_CATEGORY;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_DESCRIPTION;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_ID;
@@ -77,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton buttonAddTask;
     private DrawerLayout drawer;
     private Button navButton;
+    private CheckBox checkBox;
 
     String date, time;
     String year, month, day;
@@ -204,8 +201,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if ((getIntent().getBooleanExtra("fromnotification", false) == true))
-        {
+        if ((getIntent().getBooleanExtra("fromnotification", false) == true)) {
             getIntent().removeExtra("fromnotification");
             startActivityForResult(
                     new Intent("com.rephlexions.taskscheduler.DeadlinePickerActivity"), 123);
@@ -234,8 +230,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if ((getIntent().getBooleanExtra("fromnotification", false) == true))
-        {
+        if ((getIntent().getBooleanExtra("fromnotification", false) == true)) {
             getIntent().removeExtra("fromnotification");
             startActivityForResult(
                     new Intent("com.rephlexions.taskscheduler.DeadLinePickerActivity"), 123);
@@ -279,9 +274,9 @@ public class MainActivity extends AppCompatActivity {
         });
         SubMenu categoryMenu = menu.findItem(R.id.filter_category).getSubMenu();
         categoryMenu.clear();
-        categoryMenu.add(0,0,Menu.NONE,"All tasks");
+        categoryMenu.add(0, 0, Menu.NONE, "All tasks");
         for (int i = 0; i < categoriesList.size(); i++) {
-            categoryMenu.add(0, i+1, Menu.NONE, categoriesList.get(i));
+            categoryMenu.add(0, i + 1, Menu.NONE, categoriesList.get(i));
         }
     }
 
@@ -298,24 +293,33 @@ public class MainActivity extends AppCompatActivity {
 
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
-            final long timeMillis = parseDate(date, time);
+            if (!((date.equals("No date")) && (time.equals("No time")))) {
+                final long timeMillis = parseDate(date, time);
+                //Create and insert task with a deadline into the database
+                TaskRepository repository = new TaskRepository(getApplication());
+                Task task = new Task(title, description, priority, status, timeMillis, category);
+                repository.insert(task, new TaskRepository.InsertTaskAsyncTask.InsertResult() {
+                    @Override
+                    public void onResult(long result) {
+                        Log.d(TAG, "onResultMain: " + result);
+                        newTaskID = result;
+                        startAlarm(result, title, description, priority, timeMillis, status, category);
+                    }
+                });
 
-            //Create and insert task into the database
-            TaskRepository repository = new TaskRepository(getApplication());
-            Task task = new Task(title, description, priority, status, timeMillis, category);
-            repository.insert(task, new TaskRepository.InsertTaskAsyncTask.InsertResult() {
-                @Override
-                public void onResult(long result) {
-                    Log.d(TAG, "onResultMain: " + result);
-                    newTaskID = result;
-                    startAlarm(result, title, description, priority, timeMillis, status, category);
-                }
-            });
-
-            Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
-
-
-            //TODO: check IF duedate is empty -> create Task without a due date.
+                Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
+            } else {
+                //Create and insert a task without a deadline into the database
+                TaskRepository repository = new TaskRepository(getApplication());
+                Task task = new Task(title, description, priority, status, 0L, category);
+                repository.insert(task, new TaskRepository.InsertTaskAsyncTask.InsertResult() {
+                    @Override
+                    public void onResult(long result) {
+                        Log.d(TAG, "onResultMain: " + result);
+                    }
+                });
+                Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
+            }
 
         } else if (requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK) {
             long id = data.getLongExtra(EXTRA_ID, -1);
@@ -335,6 +339,9 @@ public class MainActivity extends AppCompatActivity {
 
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
+            if (date == "No date" && time == "No time") {
+
+            }
             long timeMillis = parseDate(date, time);
 
             Task task = new Task(title, description, priority, status, timeMillis, category);
@@ -357,6 +364,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < categoriesList.size(); i++) {
             categoryMenu.add(0, i, Menu.NONE, categoriesList.get(i));
         }
+        categoryMenu.setGroupCheckable(0, true, true);
         this.menu = menu;
         return true;
     }
@@ -365,9 +373,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int n = categoriesList.size();
         Log.d(TAG, "onOptionsItemSelected: " + categoriesList);
-        //item.getSubMenu().size()
         for (int i = 1; i < n; i++) {
             if (item.getItemId() == i) {
+                item.setChecked(true);
                 String s = categoriesList.get(i);
                 taskViewModel.getAllTasksByCategory(s).observe(this, new Observer<List<Task>>() {
                     @Override
@@ -377,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
-            if(item.getItemId() == 0){
+            if (item.getItemId() == 0) {
                 taskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
                     @Override
                     public void onChanged(List<Task> tasks) {
@@ -388,12 +396,85 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         switch (item.getItemId()) {
+            case R.id.filter_date_created:
+                item.setChecked(true);
+                taskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        adapter.submitList(tasks);
+                    }
+                });
+                return true;
+            case R.id.filter_date_ascending:
+                item.setChecked(true);
+                taskViewModel.getAllTasksByDateASC().observe(this, new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        adapter.submitList(tasks);
+                    }
+                });
+                return true;
+            case R.id.filter_date_descending:
+                item.setChecked(true);
+                taskViewModel.getAllTasksByDateDESC().observe(this, new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        adapter.submitList(tasks);
+                    }
+                });
+                return true;
+
             case R.id.delete_all_tasks:
                 taskViewModel.deleteAllTasks();
                 Toast.makeText(this, "All tasks deleted", Toast.LENGTH_SHORT).show();
                 return true;
-            //TODO: filter by priority
-                default:
+            case R.id.filter_all_priority:
+                item.setChecked(true);
+                taskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        // Update RecyclerView
+                        adapter.submitList(tasks);
+                    }
+                });
+                return true;
+            case R.id.filter_none_priority:
+                item.setChecked(true);
+                taskViewModel.getAllTasksByPriority("None").observe(this, new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        adapter.submitList(tasks);
+                    }
+                });
+                return true;
+            case R.id.filter_low_priority:
+                item.setChecked(true);
+                taskViewModel.getAllTasksByPriority("Low").observe(this, new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        adapter.submitList(tasks);
+                    }
+                });
+                return true;
+            case R.id.filter_medium_priority:
+                item.setChecked(true);
+                taskViewModel.getAllTasksByPriority("Medium").observe(this, new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        adapter.submitList(tasks);
+                    }
+                });
+                return true;
+            case R.id.filter_high_priority:
+                item.setChecked(true);
+                taskViewModel.getAllTasksByPriority("High").observe(this, new Observer<List<Task>>() {
+                    @Override
+                    public void onChanged(List<Task> tasks) {
+                        adapter.submitList(tasks);
+                    }
+                });
+                return true;
+            default:
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -408,6 +489,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public long parseDate(String date, String time) {
+        if (date == null && time == null) {
+            return 0L;
+        }
         SimpleDateFormat sdfYear = new SimpleDateFormat("yy");
         SimpleDateFormat sdfMonth = new SimpleDateFormat("MM");
         SimpleDateFormat sdfDay = new SimpleDateFormat("dd");

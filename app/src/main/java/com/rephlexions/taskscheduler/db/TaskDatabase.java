@@ -59,12 +59,10 @@ public abstract class TaskDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            taskDao.insert(new Task("Buy some milk", "2 liters", "Low","pending",10000, "Home"));
-            taskDao.insert(new Task("Feed the cat", "also pet the cat", "Low","pending", 0, "Home"));
+            taskDao.insert(new Task("Buy some milk", "2 liters", "Low","pending",1568804400000L, "Home"));
+            taskDao.insert(new Task("Plan your birthday party", "Shopping List", "High","pending", 1569661200000L, "Home"));
             categoryDao.insert(new Category("Home"));
             categoryDao.insert(new Category("Work"));
-//            taskCategoryJoinDao.insert(new TaskCategoryJoin(1,1));
-//            taskCategoryJoinDao.insert(new TaskCategoryJoin(2,1));
             return null;
         }
     }
