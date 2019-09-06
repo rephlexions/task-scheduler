@@ -26,6 +26,10 @@
             android:name="com.rephlexions.taskscheduler.AddEditTaskActivity"
             android:parentActivityName="com.rephlexions.taskscheduler.MainActivity">
         </activity>
+        <activity android:name="com.rephlexions.taskscheduler.DeadlinePickerActivity"
+            android:launchMode="singleInstance" android:excludeFromRecents="true"
+            android:taskAffinity="" android:theme="@android:style/Theme.Dialog">
+        </activity>
         <receiver android:name=".reminders.AlertReceiver" />
         <receiver android:name=".utils.ActionReceiver">
 

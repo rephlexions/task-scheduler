@@ -328,7 +328,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         data.putExtra(EXTRA_CATEGORY, category);
         data.putStringArrayListExtra(EXTRA_CATEGORIESLIST, categoriesList);
 
-        int id = getIntent().getIntExtra(EXTRA_ID, -1);
+        long id = getIntent().getLongExtra(EXTRA_ID, -1);
         if (id != -1) {
             data.putExtra(EXTRA_ID, id);
         }
@@ -410,27 +410,6 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         categoriesSpinner.setAdapter(adp1);
     }
 
-    private void startAlarm(@NonNull Calendar c) {
-        Intent alertIntent = new Intent(this, AlertReceiver.class);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),
-                PendingIntent.getBroadcast(this, 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-
-        /*
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, AlertReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        if (c.before(Calendar.getInstance())) {
-            c.add(Calendar.DATE, 1);
-        }
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
-
-
-         */
-
-    }
-
     @Override
     public void applyName(String name) {
         Toast.makeText(this, "" + name , Toast.LENGTH_SHORT).show();
@@ -448,4 +427,24 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         }
         return categoryNames;
     }
+
+/*
+    private void startAlarm(@NonNull Calendar c) {
+        Intent alertIntent = new Intent(this, AlertReceiver.class);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),
+                PendingIntent.getBroadcast(this, 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+
+
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlertReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        if (c.before(Calendar.getInstance())) {
+            c.add(Calendar.DATE, 1);
+        }
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+    }
+
+ */
 }

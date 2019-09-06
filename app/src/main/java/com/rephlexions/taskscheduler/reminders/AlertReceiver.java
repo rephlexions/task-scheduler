@@ -2,7 +2,6 @@ package com.rephlexions.taskscheduler.reminders;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,10 +9,10 @@ import android.content.Intent;
 import androidx.core.app.NotificationCompat;
 
 import com.rephlexions.taskscheduler.AddEditTaskActivity;
+import com.rephlexions.taskscheduler.MainActivity;
 import com.rephlexions.taskscheduler.R;
 import com.rephlexions.taskscheduler.utils.ActionReceiver;
 
-import static com.rephlexions.taskscheduler.AddEditTaskActivity.ACTION_ONGOING;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_ALERTCATEGORY;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_ALERTDESCRIPTION;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_ALERTID;
@@ -60,26 +59,48 @@ public class AlertReceiver extends BroadcastReceiver {
         intent.putExtra(EXTRA_CATEGORY, category);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Intent actionIntent = new Intent(context, ActionReceiver.class);
-        actionIntent.putExtra(EXTRA_ID, id);
-        actionIntent.putExtra(EXTRA_TITLE, title);
-        actionIntent.putExtra(EXTRA_DESCRIPTION, contentText);
-        actionIntent.putExtra(EXTRA_PRIORITY, radioChoice);
-        actionIntent.putExtra(EXTRA_MILLI, dateTimeLong);
-        actionIntent.putExtra(EXTRA_STATUS, taskStatus);
-        actionIntent.putExtra(EXTRA_CATEGORY, category);
-        actionIntent.putExtra("action","ongoing");
+        Intent firstAction = new Intent(context, ActionReceiver.class);
+        firstAction.putExtra(EXTRA_ID, id);
+        firstAction.putExtra(EXTRA_TITLE, title);
+        firstAction.putExtra(EXTRA_DESCRIPTION, contentText);
+        firstAction.putExtra(EXTRA_PRIORITY, radioChoice);
+        firstAction.putExtra(EXTRA_MILLI, dateTimeLong);
+        firstAction.putExtra(EXTRA_STATUS, taskStatus);
+        firstAction.putExtra(EXTRA_CATEGORY, category);
+        firstAction.putExtra("action","ongoing");
 
-        PendingIntent actionPendingIntent = PendingIntent.getBroadcast(context,1,actionIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent secondAction = new Intent(context, ActionReceiver.class);
+        secondAction.putExtra(EXTRA_ID, id);
+        secondAction.putExtra(EXTRA_TITLE, title);
+        secondAction.putExtra(EXTRA_DESCRIPTION, contentText);
+        secondAction.putExtra(EXTRA_PRIORITY, radioChoice);
+        secondAction.putExtra(EXTRA_MILLI, dateTimeLong);
+        secondAction.putExtra(EXTRA_STATUS, taskStatus);
+        secondAction.putExtra(EXTRA_CATEGORY, category);
+        secondAction.putExtra("action","postpone");
 
-        PendingIntent notificationIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        PendingIntent firstActionPendingIntent = PendingIntent.getBroadcast(context,1,
+                                            firstAction,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent secondActionPendingIntent = PendingIntent.getBroadcast(context,0,
+                secondAction,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent dialog = new Intent(context, MainActivity.class);
+        dialog.putExtra("fromnotification", true);
+
+        PendingIntent postPoneIntent = PendingIntent.getActivity(context, 0,
+                dialog,0);
+
+        PendingIntent notificationIntent = PendingIntent.getActivity(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder nb = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_alarm_on_black)
                 .setContentTitle(title)
                 .setTicker(msgAlert)
                 .setContentText(contentText)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .addAction(R.drawable.ic_close, "ongoing",actionPendingIntent);
+                .addAction(R.drawable.ic_play_arrow_black_, "ongoing",firstActionPendingIntent)
+                .addAction(R.drawable.ic_add_alarm_black, "postpone", postPoneIntent);
         nb.setContentIntent(notificationIntent);
         nb.setDefaults(NotificationCompat.DEFAULT_SOUND);
         nb.setAutoCancel(true);
