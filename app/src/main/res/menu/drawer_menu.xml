@@ -5,25 +5,13 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_message"
-            android:icon="@drawable/ic_label_black"
-            android:title="Message" />
+            android:id="@+id/nav_MainActivity"
+            android:icon="@drawable/ic_priority_high_black"
+            android:title="My Tasks" />
         <item
+            android:id="@+id/nav_DataVisActivity"
             android:title="Statistics">
         </item>
     </group>
 
-    <item android:title="Labels">
-        <menu>
-            <item
-                android:id="@+id/nav_category"
-                android:icon="@drawable/ic_label_black"
-                android:title="Category" />
-            <item
-                android:id="@+id/nav_add_category"
-                android:icon="@drawable/ic_add_black"
-                android:title="Add new category">
-            </item>
-        </menu>
-    </item>
 </menu>

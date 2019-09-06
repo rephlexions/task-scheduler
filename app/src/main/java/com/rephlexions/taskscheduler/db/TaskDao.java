@@ -49,4 +49,10 @@ public interface TaskDao {
     @Query("SELECT * FROM TASK_TABLE WHERE title = :title")
     LiveData<List<Task>> getTaskID(String title);
 
+    @Query("SELECT * FROM TASK_TABLE WHERE status = :status")
+    LiveData<List<Task>> getAllTasksByStatus(String status);
+
+//    @Query("SELECT  COUNT(*) FROM TASK_TABLE WHERE status = :status")
+//    LiveData<> counttasks(String status);
+
 }

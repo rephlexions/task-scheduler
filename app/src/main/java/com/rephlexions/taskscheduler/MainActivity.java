@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -31,11 +30,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.rephlexions.taskscheduler.db.Category;
 import com.rephlexions.taskscheduler.db.Task;
 import com.rephlexions.taskscheduler.db.TaskRepository;
 import com.rephlexions.taskscheduler.reminders.AlertReceiver;
 import com.rephlexions.taskscheduler.utils.CategoryListAdapter;
+import com.rephlexions.taskscheduler.utils.StatusListAdapter;
 import com.rephlexions.taskscheduler.utils.TaskListAdapter;
 
 import java.text.SimpleDateFormat;
@@ -82,6 +90,13 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Integer> idList = new ArrayList<>();
     private Menu menu;
     final TaskListAdapter taskAdapter = new TaskListAdapter();
+    ArrayList<String> pendingTasksList = new ArrayList<>();
+    ArrayList<String> completedTasksList = new ArrayList<>();
+    ArrayList<String> ongoingTasksList = new ArrayList<>();
+    int pendingTasks;
+    int completedTasks;
+    int ongoingTasks;
+
     BroadcastReceiver broadcastReceiver;
     public long newTaskID;
 
@@ -121,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         registerReceiver(broadcastReceiver, new IntentFilter("ChangeTaskStatus"));
+        registerReceiver(broadcastReceiver, new IntentFilter("PostPoneTask"));
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -137,6 +152,24 @@ public class MainActivity extends AppCompatActivity {
                     Task task = new Task(title, description, priority, status, dateTimeLong, category);
                     task.setId(id);
                     taskViewModel.update(task);
+                }
+            }
+        };
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals("PostPoneTask")) {
+                    long id = intent.getLongExtra(EXTRA_ID, -1);
+                    String title = intent.getStringExtra(EXTRA_TITLE);
+                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
+                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
+                    String status = intent.getStringExtra(EXTRA_STATUS);
+                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
+                    String category = intent.getStringExtra(EXTRA_CATEGORY);
+                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
+                    task.setId(id);
+                    taskViewModel.update(task);
+                    startAlarm(id,title,description,priority, dateTimeLong,status,category);
                 }
             }
         };
@@ -186,15 +219,56 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Create drawer menu
+        pendingTasks = countTasksByStatus("pending");
+        completedTasks = countTasksByStatus("completed");
+        ongoingTasks = countTasksByStatus("ongoing");
+        // Create toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-        navButton = (Button) findViewById(R.id.nav_add_category);
+        AccountHeader headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.unibo)
+                .build();
+        //Create Drawer Menu
+        new DrawerBuilder().withActivity(this).build();
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("My Tasks");
+        SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName("Statistics");
+        //create the drawer and remember the `Drawer` result object
+        Drawer result = new DrawerBuilder()
+                .withActivity(this)
+                .withAccountHeader(headerResult)
+                .withToolbar(toolbar)
+                .addDrawerItems(
+                        item1,
+                        new DividerDrawerItem(),
+                        item2
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        Intent intent = null;
+                        switch ((int) drawerItem.getIdentifier()) {
+                            case 2:
+                                intent = new Intent(MainActivity.this, MPAndroidChartActivity.class);
+                                intent.putExtra("PendingTasks", pendingTasks);
+                                intent.putExtra("CompletedTasks", completedTasks);
+                                intent.putExtra("OngoingTasks", ongoingTasks);
+                                startActivity(intent);
+                                break;
+                            default:
+                                break;
+                        }
+                        return true;
+                    }
+                })
+                .build();
+        result.addStickyFooterItem(new PrimaryDrawerItem().withName("v1.0"));
+//        drawer = findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+//                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.addDrawerListener(toggle);
+//        toggle.syncState();
+//        navButton = (Button) findViewById(R.id.nav_MainActivity);
 
     }
 
@@ -224,6 +298,27 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals("PostPoneTask")) {
+                    long id = intent.getLongExtra(EXTRA_ID, -1);
+                    String title = intent.getStringExtra(EXTRA_TITLE);
+                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
+                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
+                    String status = intent.getStringExtra(EXTRA_STATUS);
+                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
+                    String category = intent.getStringExtra(EXTRA_CATEGORY);
+                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
+                    task.setId(id);
+                    taskViewModel.update(task);
+                    startAlarm(id,title,description,priority, dateTimeLong,status,category);
+                }
+            }
+        };
+        pendingTasks = countTasksByStatus("pending");
+        completedTasks = countTasksByStatus("completed");
+        ongoingTasks = countTasksByStatus("ongoing");
 
     }
 
@@ -235,7 +330,6 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(
                     new Intent("com.rephlexions.taskscheduler.DeadLinePickerActivity"), 123);
         }
-        //registerReceiver(broadcastReceiver, new IntentFilter("ChangeTaskStatus"));
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -253,6 +347,28 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals("PostPoneTask")) {
+                    long id = intent.getLongExtra(EXTRA_ID, -1);
+                    String title = intent.getStringExtra(EXTRA_TITLE);
+                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
+                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
+                    String status = intent.getStringExtra(EXTRA_STATUS);
+                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
+                    String category = intent.getStringExtra(EXTRA_CATEGORY);
+                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
+                    task.setId(id);
+                    taskViewModel.update(task);
+                    startAlarm(id,title,description,priority, dateTimeLong,status,category);
+                }
+            }
+        };
+
+        pendingTasks = countTasksByStatus("pending");
+        completedTasks = countTasksByStatus("completed");
+        ongoingTasks = countTasksByStatus("ongoing");
     }
 
     @Override
@@ -278,6 +394,11 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < categoriesList.size(); i++) {
             categoryMenu.add(0, i + 1, Menu.NONE, categoriesList.get(i));
         }
+
+        pendingTasks = countTasksByStatus("pending");
+        completedTasks = countTasksByStatus("completed");
+        ongoingTasks = countTasksByStatus("ongoing");
+
     }
 
     @Override
@@ -301,7 +422,6 @@ public class MainActivity extends AppCompatActivity {
                 repository.insert(task, new TaskRepository.InsertTaskAsyncTask.InsertResult() {
                     @Override
                     public void onResult(long result) {
-                        Log.d(TAG, "onResultMain: " + result);
                         newTaskID = result;
                         startAlarm(result, title, description, priority, timeMillis, status, category);
                     }
@@ -315,7 +435,6 @@ public class MainActivity extends AppCompatActivity {
                 repository.insert(task, new TaskRepository.InsertTaskAsyncTask.InsertResult() {
                     @Override
                     public void onResult(long result) {
-                        Log.d(TAG, "onResultMain: " + result);
                     }
                 });
                 Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
@@ -323,33 +442,37 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK) {
             long id = data.getLongExtra(EXTRA_ID, -1);
-
             //Don't update if ID is not valid
             if (id == -1) {
                 Toast.makeText(this, "Task can't be updated", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            String title = data.getStringExtra(EXTRA_TITLE);
-            String description = data.getStringExtra(EXTRA_DESCRIPTION);
-            String priority = data.getStringExtra(EXTRA_PRIORITY);
-            String status = data.getStringExtra(EXTRA_STATUS);
-            String category = data.getStringExtra(EXTRA_CATEGORY);
+            final String title = data.getStringExtra(EXTRA_TITLE);
+            final String description = data.getStringExtra(EXTRA_DESCRIPTION);
+            final String priority = data.getStringExtra(EXTRA_PRIORITY);
+            final String status = data.getStringExtra(EXTRA_STATUS);
+            final String category = data.getStringExtra(EXTRA_CATEGORY);
             ArrayList<String> categoriesList = data.getStringArrayListExtra(AddEditTaskActivity.EXTRA_CATEGORIESLIST);
 
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
-            if (date == "No date" && time == "No time") {
 
+            if (!((date.equals("No date")) && (time.equals("No time")))) {
+                final long timeMillis = parseDate(date, time);
+                //Create and update task with a deadline into the database
+                Task task = new Task(title, description, priority, status, timeMillis, category);
+                task.setId(id);
+                taskViewModel.update(task);
+                startAlarm(id,title,description,priority,timeMillis,status,category);
+                Toast.makeText(this, "Task updated", Toast.LENGTH_SHORT).show();
+            } else {
+                //Create and update  a task without a deadline into the database
+                Task task = new Task(title, description, priority, status, 0L, category);
+                task.setId(id);
+                taskViewModel.update(task);
+                Toast.makeText(this, "Task updated", Toast.LENGTH_SHORT).show();
             }
-            long timeMillis = parseDate(date, time);
-
-            Task task = new Task(title, description, priority, status, timeMillis, category);
-            task.setId(id);
-            taskViewModel.update(task);
-
-            Toast.makeText(this, "Task updated", Toast.LENGTH_SHORT).show();
-
         } else {
             Toast.makeText(this, "Task not saved", Toast.LENGTH_SHORT).show();
         }
@@ -515,8 +638,7 @@ public class MainActivity extends AppCompatActivity {
         return cal.getTimeInMillis();
     }
 
-    public void startAlarm(long id, String title, String description, String priority, long timeMillis,
-                           String status, String category) {
+    public void startAlarm(long id, String title, String description, String priority, long timeMillis, String status, String category) {
         Intent alertIntent = new Intent(this, AlertReceiver.class);
         alertIntent.putExtra(EXTRA_ALERTID, id);
         alertIntent.putExtra(EXTRA_ALERTTITLE, title);
@@ -530,6 +652,48 @@ public class MainActivity extends AppCompatActivity {
                 alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeMillis, pendingIntent);
     }
+
+    public int countTasksByStatus(String status) {
+        final StatusListAdapter statusListAdapter = new StatusListAdapter();
+        if (status.equals("pending")) {
+            taskViewModel.getAllTasksByStatus("pending").observe(this, new Observer<List<Task>>() {
+                @Override
+                public void onChanged(@Nullable final List<Task> task) {
+                    pendingTasksList.clear();
+                    statusListAdapter.setTask(task);
+                    for (int i = 0; i < statusListAdapter.getItemCount(); i++) {
+                        pendingTasksList.add(task.get(i).getStatus());
+                    }
+                }
+            });
+            return pendingTasksList.size();
+        } else if (status.equals("completed")) {
+            taskViewModel.getAllTasksByStatus("completed").observe(this, new Observer<List<Task>>() {
+                @Override
+                public void onChanged(@Nullable final List<Task> task) {
+                    completedTasksList.clear();
+                    statusListAdapter.setTask(task);
+                    for (int i = 0; i < statusListAdapter.getItemCount(); i++) {
+                        completedTasksList.add(task.get(i).getStatus());
+                    }
+                }
+            });
+            return completedTasksList.size();
+        } else {
+            taskViewModel.getAllTasksByStatus("ongoing").observe(this, new Observer<List<Task>>() {
+                @Override
+                public void onChanged(@Nullable final List<Task> task) {
+                    ongoingTasksList.clear();
+                    statusListAdapter.setTask(task);
+                    for (int i = 0; i < statusListAdapter.getItemCount(); i++) {
+                        ongoingTasksList.add(task.get(i).getStatus());
+                    }
+                }
+            });
+            return ongoingTasksList.size();
+        }
+    }
+}
 
     /*
     @Override
@@ -553,4 +717,3 @@ public class MainActivity extends AppCompatActivity {
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
     }
     */
-}

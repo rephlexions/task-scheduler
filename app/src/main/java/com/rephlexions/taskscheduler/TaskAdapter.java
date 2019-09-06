@@ -3,14 +3,11 @@ package com.rephlexions.taskscheduler;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -19,9 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.rephlexions.taskscheduler.db.Task;
 
-import org.w3c.dom.Text;
-
-import static android.content.ContentValues.TAG;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.getDate;
 
 
@@ -77,8 +71,13 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
 
         if (currentTask.getStatus().equals("completed")) {
             holder.textViewTitle.setPaintFlags(holder.textViewTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.checkBox.setChecked(true);
         } else if (currentTask.getStatus().equals("pending")) {
             holder.textViewTitle.setPaintFlags(0);
+            holder.checkBox.setChecked(false);
+        } else if (currentTask.getStatus().equals("ongoing")) {
+            holder.textViewTitle.setPaintFlags(0);
+            holder.checkBox.setChecked(false);
         }
 
         if (currentTask.getPriority().equals("Low")) {

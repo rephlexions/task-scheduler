@@ -258,9 +258,15 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
                 String[] dateTime = getDate(dateTimeLong, "MM/dd/yy HH:mm");
                 datetextView.setText(dateTime[0]);
                 timetextView.setText(dateTime[1]);
+                deleteButton.setVisibility(View.VISIBLE);
             }
             if (taskStatus.equals("ongoing")) {
                 switchButton.setChecked(true);
+            }
+            if(taskStatus.equals("completed")){
+                checkBox.setChecked(true);
+                editTextTitle.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+                switchButton.setChecked(false);
             }
 
             if (intent.getStringExtra(EXTRA_PRIORITY).equals("None")) {

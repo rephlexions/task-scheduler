@@ -2,12 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:paddingBottom="20dp"
-    tools:context="com.rephlexions.taskscheduler.MainActivity">
+    tools:context="com.rephlexions.taskscheduler.MPAndroidChartActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -23,24 +20,10 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <!-- FIXME: replace temporary paddingTop for the recyclerview overlapping the toolbar-->
-        <androidx.recyclerview.widget.RecyclerView
-            android:paddingTop="60dp"
-            android:id="@+id/recycler_view"
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/chart"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/task_item">
-
-        </androidx.recyclerview.widget.RecyclerView>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/button_add_task"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="35dp"
-            android:src="@drawable/ic_add"
-            app:rippleColor="@color/colorSecondaryLight" />
+            android:layout_height="match_parent" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

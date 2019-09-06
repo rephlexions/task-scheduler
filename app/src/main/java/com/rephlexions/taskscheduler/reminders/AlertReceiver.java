@@ -30,7 +30,7 @@ import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_STATUS;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_TITLE;
 
 public class AlertReceiver extends BroadcastReceiver {
-    private static final String TAG = "TaskScheduler";
+    private static final String TAG = "CreateNotification";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -101,12 +101,11 @@ public class AlertReceiver extends BroadcastReceiver {
                 .setContentText(contentText)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .addAction(R.drawable.ic_play_arrow_black_, "ongoing",firstActionPendingIntent)
-                .addAction(R.drawable.ic_add_alarm_black, "postpone", postPoneIntent);
+                .addAction(R.drawable.ic_add_alarm_black, "postpone by 10 minutes", secondActionPendingIntent);
         nb.setContentIntent(notificationIntent);
         nb.setDefaults(NotificationCompat.DEFAULT_SOUND);
         nb.setAutoCancel(true);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Log.d(TAG, "createNotification: " + (int) id);
         notificationManager.notify(TAG, (int) id, nb.build());
     }
 }

@@ -12,7 +12,6 @@ import com.rephlexions.taskscheduler.db.Task;
 import com.rephlexions.taskscheduler.db.TaskRepository;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import static android.content.ContentValues.TAG;
 
@@ -36,12 +35,16 @@ public class TaskViewModel extends AndroidViewModel {
         return repository.getAllTasksByPriority(priority);
     }
 
-    public LiveData<List<Task>> getAllTasksByDateASC(){
+    public LiveData<List<Task>> getAllTasksByDateASC() {
         return repository.getAllTasksByDateASC();
     }
 
-    public LiveData<List<Task>> getAllTasksByDateDESC(){
+    public LiveData<List<Task>> getAllTasksByDateDESC() {
         return repository.getAllTasksByDateDESC();
+    }
+
+    public LiveData<List<Task>> getAllTasksByStatus(String status) {
+        return repository.getAllTasksByStatus(status);
     }
 
     LiveData<List<Task>> getTaskID(String title) {

@@ -6,9 +6,6 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
-import java.util.logging.Logger;
-
-import static java.util.logging.Logger.getLogger;
 
 public class TaskRepository {
     private TaskDao taskDao;
@@ -32,23 +29,29 @@ public class TaskRepository {
 
     }
 
-    public LiveData<List<Task>> getAllTasksByCategory(String category){
+    public LiveData<List<Task>> getAllTasksByCategory(String category) {
         return taskDao.getAllTasksByCategory(category);
     }
-    public LiveData<List<Task>> getAllTasksByPriority(String priority){
+
+    public LiveData<List<Task>> getAllTasksByPriority(String priority) {
         return taskDao.getAllTasksByPriority(priority);
     }
 
-    public LiveData<List<Task>> getAllTasksByDateASC(){
+    public LiveData<List<Task>> getAllTasksByDateASC() {
         return taskDao.getAllTasksByDateASC();
     }
 
-    public LiveData<List<Task>> getAllTasksByDateDESC(){
+    public LiveData<List<Task>> getAllTasksByDateDESC() {
         return taskDao.getAllTasksByDateDESC();
     }
 
+    public LiveData<List<Task>> getAllTasksByStatus(String status) {
+        return taskDao.getAllTasksByStatus(status);
+    }
     // The API that the repository exposes to the ViewModel
-    public LiveData<List<Task>> getTaskID(String title){return taskDao.getTaskID(title);}
+    public LiveData<List<Task>> getTaskID(String title) {
+        return taskDao.getTaskID(title);
+    }
 
     public void insert(Task task, InsertTaskAsyncTask.InsertResult insertResult) {
         new InsertTaskAsyncTask(taskDao, insertResult).execute(task);

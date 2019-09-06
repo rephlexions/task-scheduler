@@ -27,6 +27,7 @@ import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_STATUS;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_TITLE;
 
 public class ActionReceiver extends BroadcastReceiver {
+    private static final String TAG = "CreateNotification";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -53,11 +54,19 @@ public class ActionReceiver extends BroadcastReceiver {
             intentStatus.putExtra(EXTRA_STATUS, "ongoing");
             intentStatus.putExtra(EXTRA_CATEGORY, category);
             context.sendBroadcast(intentStatus);
-            Log.d(TAG, "onReceive: " + (int) id);
-            notificationManager.cancel((int) id);
+            notificationManager.cancel(TAG,(int) id);
         }
         else if(action.equals("postpone")){
-            Log.d(TAG, "onReceive: second action");
+            Intent intentStatus = new Intent("PostPoneTask");
+            intentStatus.putExtra(EXTRA_ID, id);
+            intentStatus.putExtra(EXTRA_TITLE, title);
+            intentStatus.putExtra(EXTRA_DESCRIPTION, description);
+            intentStatus.putExtra(EXTRA_PRIORITY, priority);
+            intentStatus.putExtra(EXTRA_MILLI, dateTimeLong + 5000L);
+            intentStatus.putExtra(EXTRA_STATUS, status);
+            intentStatus.putExtra(EXTRA_CATEGORY, category);
+            context.sendBroadcast(intentStatus);
+            notificationManager.cancel(TAG,(int) id);
         }
     }
 
