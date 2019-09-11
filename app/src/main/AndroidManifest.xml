@@ -4,6 +4,7 @@
     package="com.rephlexions.taskscheduler">
 
     <application
+        android:name=".TaskSchedulerApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

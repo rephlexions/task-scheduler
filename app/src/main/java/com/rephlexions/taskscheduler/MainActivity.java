@@ -282,6 +282,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+        registerReceiver(broadcastReceiverDelay, new IntentFilter("PostPoneTask"));
         broadcastReceiverDelay = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -291,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
                     String description = intent.getStringExtra(EXTRA_DESCRIPTION);
                     String priority = intent.getStringExtra(EXTRA_PRIORITY);
                     String status = intent.getStringExtra(EXTRA_STATUS);
-                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
+                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 0L);
                     String category = intent.getStringExtra(EXTRA_CATEGORY);
                     Task task = new Task(title, description, priority, status, dateTimeLong, category);
                     task.setId(id);
@@ -306,54 +307,50 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-////        if ((getIntent().getBooleanExtra("fromnotification", false) == true)) {
-////            getIntent().removeExtra("fromnotification");
-////            startActivityForResult(
-////                    new Intent("com.rephlexions.taskscheduler.DeadLinePickerActivity"), 123);
-////        }
-//        broadcastReceiver = new BroadcastReceiver() {
-//            @Override
-//            public void onReceive(Context context, Intent intent) {
-//                if (intent.getAction().equals("ChangeTaskStatus")) {
-//                    long id = intent.getLongExtra(EXTRA_ID, -1);
-//                    String title = intent.getStringExtra(EXTRA_TITLE);
-//                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
-//                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
-//                    String status = intent.getStringExtra(EXTRA_STATUS);
-//                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
-//                    String category = intent.getStringExtra(EXTRA_CATEGORY);
-//                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
-//                    task.setId(id);
-//                    taskViewModel.update(task);
-//                }
-//            }
-//        };
-////        broadcastReceiver = new BroadcastReceiver() {
-////            @Override
-////            public void onReceive(Context context, Intent intent) {
-////                if (intent.getAction().equals("PostPoneTask")) {
-////                    long id = intent.getLongExtra(EXTRA_ID, -1);
-////                    String title = intent.getStringExtra(EXTRA_TITLE);
-////                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
-////                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
-////                    String status = intent.getStringExtra(EXTRA_STATUS);
-////                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
-////                    String category = intent.getStringExtra(EXTRA_CATEGORY);
-////                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
-////                    task.setId(id);
-////                    taskViewModel.update(task);
-////                    startAlarm(id,title,description,priority, dateTimeLong,status,category);
-////                }
-////            }
-////        };
-//
-//        pendingTasks = countTasksByStatus("pending");
-//        completedTasks = countTasksByStatus("completed");
-//        ongoingTasks = countTasksByStatus("ongoing");
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        broadcastReceiverDelay = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals("ChangeTaskStatus")) {
+                    long id = intent.getLongExtra(EXTRA_ID, -1);
+                    String title = intent.getStringExtra(EXTRA_TITLE);
+                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
+                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
+                    String status = intent.getStringExtra(EXTRA_STATUS);
+                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 0L);
+                    String category = intent.getStringExtra(EXTRA_CATEGORY);
+                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
+                    task.setId(id);
+                    taskViewModel.update(task);
+                }
+            }
+        };
+        registerReceiver(broadcastReceiverDelay, new IntentFilter("PostPoneTask"));
+        broadcastReceiverDelay = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals("PostPoneTask")) {
+                    long id = intent.getLongExtra(EXTRA_ID, -1);
+                    String title = intent.getStringExtra(EXTRA_TITLE);
+                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
+                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
+                    String status = intent.getStringExtra(EXTRA_STATUS);
+                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 0L);
+                    String category = intent.getStringExtra(EXTRA_CATEGORY);
+                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
+                    task.setId(id);
+                    taskViewModel.update(task);
+                    startAlarm(id,title,description,priority, dateTimeLong,status,category);
+                }
+            }
+        };
+
+        pendingTasks = countTasksByStatus("pending");
+        completedTasks = countTasksByStatus("completed");
+        ongoingTasks = countTasksByStatus("ongoing");
+    }
 
     @Override
     protected void onRestart() {

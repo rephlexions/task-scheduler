@@ -1,21 +1,10 @@
 package com.rephlexions.taskscheduler;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
-import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,14 +25,17 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.rephlexions.taskscheduler.db.Category;
-import com.rephlexions.taskscheduler.db.Task;
 import com.rephlexions.taskscheduler.fragments.AddCategoryDialog;
 import com.rephlexions.taskscheduler.fragments.DatePickerFragment;
 import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
-import com.rephlexions.taskscheduler.reminders.AlertReceiver;
 import com.rephlexions.taskscheduler.utils.CategoryListAdapter;
-import com.rephlexions.taskscheduler.utils.TaskListAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -168,7 +160,6 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (nonePriority.isChecked()) {
-                    //Toast.makeText(AddEditTaskActivity.this, "None", Toast.LENGTH_SHORT).show();
                     radioChoice = "None";
                 } else if (lowPriority.isChecked()) {
                     radioChoice = "Low";
@@ -183,7 +174,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         int radioButtonID = radioGroup.getCheckedRadioButtonId();
         View defaultRadioButton = radioGroup.findViewById(radioButtonID);
         int idx = radioGroup.indexOfChild(defaultRadioButton);
-        if(idx == 1){
+        if (idx == 1) {
             radioChoice = "Low";
         }
 
@@ -263,7 +254,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             if (taskStatus.equals("ongoing")) {
                 switchButton.setChecked(true);
             }
-            if(taskStatus.equals("completed")){
+            if (taskStatus.equals("completed")) {
                 checkBox.setChecked(true);
                 editTextTitle.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
                 switchButton.setChecked(false);

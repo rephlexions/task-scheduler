@@ -18,6 +18,7 @@ import com.rephlexions.taskscheduler.db.TaskRepository;
 import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import static android.content.ContentValues.TAG;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_CATEGORY;
@@ -60,8 +61,9 @@ public class ActionReceiver extends BroadcastReceiver {
         }
         else if(action.equals("postpone")){
             Intent intentStatus = new Intent("PostPoneTask");
-            long cal = Calendar.getInstance().getTimeInMillis();
-            long newMillis = cal + 1000L;
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MINUTE, 10);
+            long newMillis = cal.getTimeInMillis();
             intentStatus.putExtra(EXTRA_ID, id);
             intentStatus.putExtra(EXTRA_TITLE, title);
             intentStatus.putExtra(EXTRA_DESCRIPTION, description);

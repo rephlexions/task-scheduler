@@ -45,6 +45,7 @@ public class TaskRepository {
     public LiveData<List<Task>> getAllTasksByStatus(String status) {
         return taskDao.getAllTasksByStatus(status);
     }
+
     // The API that the repository exposes to the ViewModel
     public LiveData<List<Task>> getTaskID(String title) {
         return taskDao.getTaskID(title);
