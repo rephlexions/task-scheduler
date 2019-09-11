@@ -79,25 +79,20 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TaskAdapter adapter;
     private FloatingActionButton buttonAddTask;
-    private DrawerLayout drawer;
-    private Button navButton;
-    private CheckBox checkBox;
-
-    String date, time;
-    String year, month, day;
-    int hour, minute;
-    ArrayList<String> categoriesList = new ArrayList<>();
-    ArrayList<Integer> idList = new ArrayList<>();
+    private String date, time;
+    private String year, month, day;
+    private int hour, minute;
+    private ArrayList<String> categoriesList = new ArrayList<>();
     private Menu menu;
-    final TaskListAdapter taskAdapter = new TaskListAdapter();
-    ArrayList<String> pendingTasksList = new ArrayList<>();
-    ArrayList<String> completedTasksList = new ArrayList<>();
-    ArrayList<String> ongoingTasksList = new ArrayList<>();
-    int pendingTasks;
-    int completedTasks;
-    int ongoingTasks;
+    private ArrayList<String> pendingTasksList = new ArrayList<>();
+    private ArrayList<String> completedTasksList = new ArrayList<>();
+    private ArrayList<String> ongoingTasksList = new ArrayList<>();
+    private int pendingTasks;
+    private int completedTasks;
+    private int ongoingTasks;
 
-    BroadcastReceiver broadcastReceiver;
+    BroadcastReceiver broadcastReceiverOngoing;
+    BroadcastReceiver broadcastReceiverDelay;
     public long newTaskID;
 
     @Override
@@ -136,9 +131,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        registerReceiver(broadcastReceiver, new IntentFilter("ChangeTaskStatus"));
-        registerReceiver(broadcastReceiver, new IntentFilter("PostPoneTask"));
-        broadcastReceiver = new BroadcastReceiver() {
+        registerReceiver(broadcastReceiverOngoing, new IntentFilter("ChangeTaskStatus"));
+        registerReceiver(broadcastReceiverDelay, new IntentFilter("PostPoneTask"));
+        broadcastReceiverOngoing = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals("ChangeTaskStatus")) {
@@ -155,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        broadcastReceiver = new BroadcastReceiver() {
+        broadcastReceiverDelay = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals("PostPoneTask")) {
@@ -263,25 +258,14 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .build();
         result.addStickyFooterItem(new PrimaryDrawerItem().withName("v1.0"));
-//        drawer = findViewById(R.id.drawer_layout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
-//                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        drawer.addDrawerListener(toggle);
-//        toggle.syncState();
-//        navButton = (Button) findViewById(R.id.nav_MainActivity);
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if ((getIntent().getBooleanExtra("fromnotification", false) == true)) {
-            getIntent().removeExtra("fromnotification");
-            startActivityForResult(
-                    new Intent("com.rephlexions.taskscheduler.DeadlinePickerActivity"), 123);
-        }
-        registerReceiver(broadcastReceiver, new IntentFilter("ChangeTaskStatus"));
-        broadcastReceiver = new BroadcastReceiver() {
+        registerReceiver(broadcastReceiverOngoing, new IntentFilter("ChangeTaskStatus"));
+        broadcastReceiverOngoing = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals("ChangeTaskStatus")) {
@@ -298,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        broadcastReceiver = new BroadcastReceiver() {
+        broadcastReceiverDelay = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals("PostPoneTask")) {
@@ -322,54 +306,54 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if ((getIntent().getBooleanExtra("fromnotification", false) == true)) {
-            getIntent().removeExtra("fromnotification");
-            startActivityForResult(
-                    new Intent("com.rephlexions.taskscheduler.DeadLinePickerActivity"), 123);
-        }
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals("ChangeTaskStatus")) {
-                    long id = intent.getLongExtra(EXTRA_ID, -1);
-                    String title = intent.getStringExtra(EXTRA_TITLE);
-                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
-                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
-                    String status = intent.getStringExtra(EXTRA_STATUS);
-                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
-                    String category = intent.getStringExtra(EXTRA_CATEGORY);
-                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
-                    task.setId(id);
-                    taskViewModel.update(task);
-                }
-            }
-        };
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals("PostPoneTask")) {
-                    long id = intent.getLongExtra(EXTRA_ID, -1);
-                    String title = intent.getStringExtra(EXTRA_TITLE);
-                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
-                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
-                    String status = intent.getStringExtra(EXTRA_STATUS);
-                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
-                    String category = intent.getStringExtra(EXTRA_CATEGORY);
-                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
-                    task.setId(id);
-                    taskViewModel.update(task);
-                    startAlarm(id,title,description,priority, dateTimeLong,status,category);
-                }
-            }
-        };
-
-        pendingTasks = countTasksByStatus("pending");
-        completedTasks = countTasksByStatus("completed");
-        ongoingTasks = countTasksByStatus("ongoing");
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+////        if ((getIntent().getBooleanExtra("fromnotification", false) == true)) {
+////            getIntent().removeExtra("fromnotification");
+////            startActivityForResult(
+////                    new Intent("com.rephlexions.taskscheduler.DeadLinePickerActivity"), 123);
+////        }
+//        broadcastReceiver = new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context context, Intent intent) {
+//                if (intent.getAction().equals("ChangeTaskStatus")) {
+//                    long id = intent.getLongExtra(EXTRA_ID, -1);
+//                    String title = intent.getStringExtra(EXTRA_TITLE);
+//                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
+//                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
+//                    String status = intent.getStringExtra(EXTRA_STATUS);
+//                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
+//                    String category = intent.getStringExtra(EXTRA_CATEGORY);
+//                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
+//                    task.setId(id);
+//                    taskViewModel.update(task);
+//                }
+//            }
+//        };
+////        broadcastReceiver = new BroadcastReceiver() {
+////            @Override
+////            public void onReceive(Context context, Intent intent) {
+////                if (intent.getAction().equals("PostPoneTask")) {
+////                    long id = intent.getLongExtra(EXTRA_ID, -1);
+////                    String title = intent.getStringExtra(EXTRA_TITLE);
+////                    String description = intent.getStringExtra(EXTRA_DESCRIPTION);
+////                    String priority = intent.getStringExtra(EXTRA_PRIORITY);
+////                    String status = intent.getStringExtra(EXTRA_STATUS);
+////                    long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
+////                    String category = intent.getStringExtra(EXTRA_CATEGORY);
+////                    Task task = new Task(title, description, priority, status, dateTimeLong, category);
+////                    task.setId(id);
+////                    taskViewModel.update(task);
+////                    startAlarm(id,title,description,priority, dateTimeLong,status,category);
+////                }
+////            }
+////        };
+//
+//        pendingTasks = countTasksByStatus("pending");
+//        completedTasks = countTasksByStatus("completed");
+//        ongoingTasks = countTasksByStatus("ongoing");
+//    }
 
     @Override
     protected void onRestart() {
@@ -602,14 +586,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
 
     public long parseDate(String date, String time) {
         if (date == null && time == null) {

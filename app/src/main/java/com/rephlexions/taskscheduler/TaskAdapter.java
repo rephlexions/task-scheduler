@@ -114,7 +114,6 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO: https://android.jlelse.eu/android-handling-checkbox-state-in-recycler-views-71b03f237022
                     int position = getAdapterPosition();
                     if (listener != null && position != RecyclerView.NO_POSITION) {
                         listener.onItemClick(getItem(position));

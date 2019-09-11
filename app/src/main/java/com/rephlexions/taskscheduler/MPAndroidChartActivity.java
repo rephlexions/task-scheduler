@@ -29,6 +29,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.rephlexions.taskscheduler.db.Category;
 import com.rephlexions.taskscheduler.db.Task;
+import com.rephlexions.taskscheduler.db.TaskDao;
 import com.rephlexions.taskscheduler.db.TaskDatabase;
 import com.rephlexions.taskscheduler.db.TaskRepository;
 import com.rephlexions.taskscheduler.utils.CategoryListAdapter;
@@ -38,9 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MPAndroidChartActivity extends AppCompatActivity {
-    TaskViewModel taskViewModel;
     private static final String TAG = "";
-    ArrayList<String> taskStatusList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

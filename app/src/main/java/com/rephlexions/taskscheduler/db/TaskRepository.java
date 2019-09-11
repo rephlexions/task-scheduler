@@ -10,18 +10,15 @@ import java.util.List;
 public class TaskRepository {
     private TaskDao taskDao;
     private CategoryDao categoryDao;
-    private TaskCategoryJoinDao taskCategoryJoinDao;
     private LiveData<List<Task>> allTasks;
     private LiveData<List<Task>> allDueDates;
     private LiveData<List<Category>> allCategories;
-    private LiveData<List<Task>> allTasksByCategory;
 
     public TaskRepository(Application application) {
         //Since application is a subclass of context we can use it as a context to create the database instance
         TaskDatabase database = TaskDatabase.getInstance(application);
         taskDao = database.taskDao();
         categoryDao = database.categoryDao();
-        //taskCategoryJoinDao = database.taskCategoryJoinDao();
 
         allTasks = taskDao.getAllTasks();
         allDueDates = taskDao.getAllDueDates();
@@ -72,11 +69,6 @@ public class TaskRepository {
     public LiveData<List<Task>> getAllTasks() {
         return allTasks;
     }
-
-    public LiveData<List<Task>> getAllDueDates() {
-        return allDueDates;
-    }
-
 
     //Room doesnt allow database operations on the main thread (app crash). Use async tasks
     public static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Long> {

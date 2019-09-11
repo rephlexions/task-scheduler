@@ -5,13 +5,12 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
 import com.rephlexions.taskscheduler.AddEditTaskActivity;
-import com.rephlexions.taskscheduler.MainActivity;
 import com.rephlexions.taskscheduler.R;
+import com.rephlexions.taskscheduler.TaskSchedulerApp;
 import com.rephlexions.taskscheduler.utils.ActionReceiver;
 
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_ALERTCATEGORY;
@@ -68,7 +67,7 @@ public class AlertReceiver extends BroadcastReceiver {
         firstAction.putExtra(EXTRA_MILLI, dateTimeLong);
         firstAction.putExtra(EXTRA_STATUS, taskStatus);
         firstAction.putExtra(EXTRA_CATEGORY, category);
-        firstAction.putExtra("action","ongoing");
+        firstAction.putExtra("action", "ongoing");
 
         Intent secondAction = new Intent(context, ActionReceiver.class);
         secondAction.putExtra(EXTRA_ID, id);
@@ -78,30 +77,31 @@ public class AlertReceiver extends BroadcastReceiver {
         secondAction.putExtra(EXTRA_MILLI, dateTimeLong);
         secondAction.putExtra(EXTRA_STATUS, taskStatus);
         secondAction.putExtra(EXTRA_CATEGORY, category);
-        secondAction.putExtra("action","postpone");
+        secondAction.putExtra("action", "postpone");
 
 
-        PendingIntent firstActionPendingIntent = PendingIntent.getBroadcast(context,1,
-                                            firstAction,PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent secondActionPendingIntent = PendingIntent.getBroadcast(context,0,
-                secondAction,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent firstActionPendingIntent = PendingIntent.getBroadcast(context, 1,
+                firstAction, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent secondActionPendingIntent = PendingIntent.getBroadcast(context, 2,
+                secondAction, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent dialog = new Intent(context, MainActivity.class);
-        dialog.putExtra("fromnotification", true);
-
-        PendingIntent postPoneIntent = PendingIntent.getActivity(context, 0,
-                dialog,0);
+//        Intent dialog = new Intent(context, MainActivity.class);
+//        dialog.putExtra("fromnotification", true);
+//
+//        PendingIntent postPoneIntent = PendingIntent.getActivity(context, 0,
+//                dialog, 0);
 
         PendingIntent notificationIntent = PendingIntent.getActivity(context, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder nb = new NotificationCompat.Builder(context)
+        NotificationCompat.Builder nb = new NotificationCompat.Builder(context, TaskSchedulerApp.CHANNEL_1_ID)
                 .setSmallIcon(R.drawable.ic_alarm_on_black)
                 .setContentTitle(title)
                 .setTicker(msgAlert)
                 .setContentText(contentText)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .addAction(R.drawable.ic_play_arrow_black_, "ongoing",firstActionPendingIntent)
+                .addAction(R.drawable.ic_play_arrow_black_, "ongoing", firstActionPendingIntent)
                 .addAction(R.drawable.ic_add_alarm_black, "postpone by 10 minutes", secondActionPendingIntent);
+                //
         nb.setContentIntent(notificationIntent);
         nb.setDefaults(NotificationCompat.DEFAULT_SOUND);
         nb.setAutoCancel(true);
@@ -109,4 +109,3 @@ public class AlertReceiver extends BroadcastReceiver {
         notificationManager.notify(TAG, (int) id, nb.build());
     }
 }
-

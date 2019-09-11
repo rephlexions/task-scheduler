@@ -17,6 +17,8 @@ import com.rephlexions.taskscheduler.db.TaskDao;
 import com.rephlexions.taskscheduler.db.TaskRepository;
 import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
 
+import java.util.Calendar;
+
 import static android.content.ContentValues.TAG;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_CATEGORY;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_DESCRIPTION;
@@ -58,19 +60,17 @@ public class ActionReceiver extends BroadcastReceiver {
         }
         else if(action.equals("postpone")){
             Intent intentStatus = new Intent("PostPoneTask");
+            long cal = Calendar.getInstance().getTimeInMillis();
+            long newMillis = cal + 1000L;
             intentStatus.putExtra(EXTRA_ID, id);
             intentStatus.putExtra(EXTRA_TITLE, title);
             intentStatus.putExtra(EXTRA_DESCRIPTION, description);
             intentStatus.putExtra(EXTRA_PRIORITY, priority);
-            intentStatus.putExtra(EXTRA_MILLI, dateTimeLong + 5000L);
+            intentStatus.putExtra(EXTRA_MILLI, newMillis);
             intentStatus.putExtra(EXTRA_STATUS, status);
             intentStatus.putExtra(EXTRA_CATEGORY, category);
             context.sendBroadcast(intentStatus);
             notificationManager.cancel(TAG,(int) id);
         }
-    }
-
-    public void performAction1(){
-
     }
 }
