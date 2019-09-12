@@ -13,16 +13,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -44,7 +40,6 @@ import com.rephlexions.taskscheduler.db.TaskRepository;
 import com.rephlexions.taskscheduler.reminders.AlertReceiver;
 import com.rephlexions.taskscheduler.utils.CategoryListAdapter;
 import com.rephlexions.taskscheduler.utils.StatusListAdapter;
-import com.rephlexions.taskscheduler.utils.TaskListAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -164,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                     Task task = new Task(title, description, priority, status, dateTimeLong, category);
                     task.setId(id);
                     taskViewModel.update(task);
-                    startAlarm(id,title,description,priority, dateTimeLong,status,category);
+                    startAlarm(id, title, description, priority, dateTimeLong, status, category);
                 }
             }
         };
@@ -297,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
                     Task task = new Task(title, description, priority, status, dateTimeLong, category);
                     task.setId(id);
                     taskViewModel.update(task);
-                    startAlarm(id,title,description,priority, dateTimeLong,status,category);
+                    startAlarm(id, title, description, priority, dateTimeLong, status, category);
                 }
             }
         };
@@ -342,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
                     Task task = new Task(title, description, priority, status, dateTimeLong, category);
                     task.setId(id);
                     taskViewModel.update(task);
-                    startAlarm(id,title,description,priority, dateTimeLong,status,category);
+                    startAlarm(id, title, description, priority, dateTimeLong, status, category);
                 }
             }
         };
@@ -434,7 +429,6 @@ public class MainActivity extends AppCompatActivity {
             final String priority = data.getStringExtra(EXTRA_PRIORITY);
             final String status = data.getStringExtra(EXTRA_STATUS);
             final String category = data.getStringExtra(EXTRA_CATEGORY);
-            ArrayList<String> categoriesList = data.getStringArrayListExtra(AddEditTaskActivity.EXTRA_CATEGORIESLIST);
 
             date = data.getStringExtra(AddEditTaskActivity.EXTRA_DATE);
             time = data.getStringExtra(AddEditTaskActivity.EXTRA_TIME);
@@ -445,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
                 Task task = new Task(title, description, priority, status, timeMillis, category);
                 task.setId(id);
                 taskViewModel.update(task);
-                startAlarm(id,title,description,priority,timeMillis,status,category);
+                startAlarm(id, title, description, priority, timeMillis, status, category);
                 Toast.makeText(this, "Task updated", Toast.LENGTH_SHORT).show();
             } else {
                 //Create and update  a task without a deadline into the database

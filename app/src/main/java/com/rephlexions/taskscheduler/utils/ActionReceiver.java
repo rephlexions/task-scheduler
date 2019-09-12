@@ -4,23 +4,9 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-import android.widget.Toast;
-
-import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.ViewModelProviders;
-
-import com.rephlexions.taskscheduler.MainActivity;
-import com.rephlexions.taskscheduler.TaskViewModel;
-import com.rephlexions.taskscheduler.db.Task;
-import com.rephlexions.taskscheduler.db.TaskDao;
-import com.rephlexions.taskscheduler.db.TaskRepository;
-import com.rephlexions.taskscheduler.fragments.TimePickerFragment;
 
 import java.util.Calendar;
-import java.util.Date;
 
-import static android.content.ContentValues.TAG;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_CATEGORY;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_DESCRIPTION;
 import static com.rephlexions.taskscheduler.AddEditTaskActivity.EXTRA_ID;
@@ -43,11 +29,11 @@ public class ActionReceiver extends BroadcastReceiver {
         String description = intent.getStringExtra(EXTRA_DESCRIPTION);
         String priority = intent.getStringExtra(EXTRA_PRIORITY);
         String status = intent.getStringExtra(EXTRA_STATUS);
-        long dateTimeLong = intent.getLongExtra(EXTRA_MILLI,1);
+        long dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 1);
         String category = intent.getStringExtra(EXTRA_CATEGORY);
 
-        String action=intent.getStringExtra("action");
-        if(action.equals("ongoing")){
+        String action = intent.getStringExtra("action");
+        if (action.equals("ongoing")) {
             Intent intentStatus = new Intent("ChangeTaskStatus");
             intentStatus.putExtra(EXTRA_ID, id);
             intentStatus.putExtra(EXTRA_TITLE, title);
@@ -57,9 +43,8 @@ public class ActionReceiver extends BroadcastReceiver {
             intentStatus.putExtra(EXTRA_STATUS, "ongoing");
             intentStatus.putExtra(EXTRA_CATEGORY, category);
             context.sendBroadcast(intentStatus);
-            notificationManager.cancel(TAG,(int) id);
-        }
-        else if(action.equals("postpone")){
+            notificationManager.cancel(TAG, (int) id);
+        } else if (action.equals("postpone")) {
             Intent intentStatus = new Intent("PostPoneTask");
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.MINUTE, 10);
@@ -72,7 +57,7 @@ public class ActionReceiver extends BroadcastReceiver {
             intentStatus.putExtra(EXTRA_STATUS, status);
             intentStatus.putExtra(EXTRA_CATEGORY, category);
             context.sendBroadcast(intentStatus);
-            notificationManager.cancel(TAG,(int) id);
+            notificationManager.cancel(TAG, (int) id);
         }
     }
 }

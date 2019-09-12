@@ -239,7 +239,6 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
             taskStatus = intent.getStringExtra(EXTRA_STATUS);
-            Toast.makeText(this, "" + taskStatus, Toast.LENGTH_SHORT).show();
             categoriesSpinner.setSelection(intent.getIntExtra(EXTRA_CATEGORY, 1));
             dateTimeLong = intent.getLongExtra(EXTRA_MILLI, 0L);
             if (dateTimeLong == 0L) {
@@ -403,7 +402,6 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
     @Override
     public void applyName(String name) {
-        Toast.makeText(this, "" + name, Toast.LENGTH_SHORT).show();
         Category category = new Category(name);
         taskViewModel.insertCategory(category);
     }
